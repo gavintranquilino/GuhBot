@@ -95,9 +95,11 @@ class Bot(BotBase):
         print('Disconnected')
 
     async def on_message(self, message):
+        if message.author.bot:
+            pass
 
         # Mentionable prefix
-        if message.content.startswith(f"<@!{self.user.id}>") and \
+        elif message.content.startswith(f"<@!{self.user.id}>") and \
             len(message.content) == len(f"<@!{self.user.id}>"
         ):
             await message.channel.send(f"Hey {message.author.mention}! My prefix here is `{self.prefix}`", delete_after=10)
