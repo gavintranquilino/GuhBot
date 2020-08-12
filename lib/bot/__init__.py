@@ -49,7 +49,8 @@ class Bot(BotBase):
         self.scheduler = AsyncIOScheduler()
 
         super().__init__(command_prefix=self.prefix,
-                         case_insensitive=True)
+                         case_insensitive=True,
+                         help_command=None)
 
     def setup(self):
         """Initial Cog loader"""

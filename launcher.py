@@ -1,6 +1,6 @@
 from lib.bot import client
 
-version = '0.0.2' # Fun Cog, Ignore bots on message
+version = '0.0.3' # Added Meta commands
 # v[Release].[Major].[Minor]_[Patch]
 
 client.run(version)
