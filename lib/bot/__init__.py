@@ -43,7 +43,7 @@ class Bot(BotBase):
     """Bot subclass"""
 
     def __init__(self):
-        self.prefix = 'guh '
+        self.prefix = 'bruh '
         self.ready = False
         self.cogs_ready = Ready()
         self.scheduler = AsyncIOScheduler()
