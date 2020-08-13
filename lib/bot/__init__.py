@@ -5,20 +5,34 @@ from discord.ext.commands import when_mentioned_or
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 # Builtin modules
-import os
-import logging
+from os import getcwd
 from glob import glob
 from pathlib import Path
-
+from json import load, dump
+from logging import basicConfig, INFO
 
 # Logging
 cwd = Path(__file__).parents[0]
 cwd = str(cwd)
 print(f"{cwd}\n-----")
-logging.basicConfig(level=logging.INFO)
+basicConfig(level=INFO)
 
 # Locate all Cogs
 COGS = [path.split('\\')[-1][:-3] for path in glob('./lib/cogs/*.py')]
+
+def get_prefix(client, message):
+    with open(getcwd()+'/lib/config/prefixes.json', 'r') as file:
+        data = load(file)
+    if not str(message.guild.id) in data:
+        return when_mentioned_or('guh ')(client, message)
+    return when_mentioned_or(data[str(message.guild.id)])(client, message)
+
+def guild_prefix(client, message):
+    with open(getcwd()+'/lib/config/prefixes.json', 'r') as file:
+        data = load(file)
+    if not str(message.guild.id) in data:
+        return 'guh '
+    return str(data[str(message.guild.id)])
 
 class Ready(object):
     """Cog console logging on startup"""
@@ -43,12 +57,12 @@ class Bot(BotBase):
     """Bot subclass"""
 
     def __init__(self):
-        self.prefix = 'bruh '
+        self.prefix = guild_prefix
         self.ready = False
         self.cogs_ready = Ready()
         self.scheduler = AsyncIOScheduler()
 
-        super().__init__(command_prefix=self.prefix,
+        super().__init__(command_prefix=get_prefix,
                          case_insensitive=True,
                          help_command=None)
 
@@ -103,8 +117,20 @@ class Bot(BotBase):
         elif message.content.startswith(f"<@!{self.user.id}>") and \
             len(message.content) == len(f"<@!{self.user.id}>"
         ):
-            await message.channel.send(f"Hey {message.author.mention}! My prefix here is `{self.prefix}`", delete_after=10)
+            await message.channel.send(f"Hey {message.author.mention}! My prefix here is `{self.prefix(self, message)}`", delete_after=10)
 
         await self.process_commands(message)
+
+    async def on_guild_remove(self, guild):
+        print(f"Removed from server {guild.name}: {guild.id}")
+
+        # --When you need to delete json prefixes for servers you aren't in--
+        # with open(getcwd()+'/lib/config/prefixes.json', 'r') as file:
+        #     data = load(file)
+        #
+        # data.pop(str(guild.id))
+        #
+        # with open(getcwd()+'/lib/config/prefixes.json', 'w') as file:
+        #     dump(data, file, indent=4)
 
 client = Bot()

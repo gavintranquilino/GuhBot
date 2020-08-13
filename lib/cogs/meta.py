@@ -4,7 +4,9 @@ from discord.ext import commands
 from apscheduler.triggers.cron import CronTrigger
 
 # Builtin modules
-import platform
+from os import getcwd
+from json import load, dump
+from platform import python_version
 
 
 class Meta(commands.Cog):
@@ -47,7 +49,7 @@ class Meta(commands.Cog):
 
         if not cog:
             embed = discord.Embed(title='🔧Modules List',
-                                  description=f"Do `{self.client.prefix}help [module]` for more info on a specific module.",
+                                  description=f"Do `{self.client.prefix(self.client, ctx.message)}help [module]` for more info on a specific module.",
                                   colour=ctx.author.colour,
                                   timestamp=ctx.message.created_at)
 
@@ -78,7 +80,7 @@ class Meta(commands.Cog):
                     for y in cog:
                         if x.lower() == y.lower():
                             embed = discord.Embed(title='🚧Commands List',
-                                                  description=f"List of GuhBot\'s Modular Commands.\nDo `{self.client.prefix}help [command]` for more info on a command",
+                                                  description=f"List of GuhBot\'s Modular Commands.\nDo `{self.client.prefix(self.client, ctx.message)}help [command]` for more info on a command",
                                                   colour=ctx.author.colour,
                                                   timestamp=ctx.message.created_at)
                             scog_info = ''
@@ -121,6 +123,21 @@ class Meta(commands.Cog):
                                           colour=discord.Colour.red(),
                                           timestamp=ctx.message.created_at)
                     await ctx.send(embed=embed)
+
+    @commands.command(aliases=['change_prefix'])
+    @commands.cooldown(3, 10, commands.BucketType.guild)
+    async def prefix(self, ctx, *, new_prefix='guh '):
+        """Set a custom prefix for your server"""
+
+        path = getcwd()+'/lib/config/prefixes.json'
+
+        with open(path, 'r') as file:
+            data = load(file)
+        data[str(ctx.message.guild.id)] = new_prefix
+        with open(path, 'w') as file:
+            dump(data, file, indent=4)
+
+        await ctx.send(f"Set the custom prefix to `{new_prefix}`\nDo `{new_prefix}prefix` to set it back to the default prefix.\nPing <@!624754986248831017> to check the current prefix.")
 
     @commands.command(aliases=['user_info', 'who_is'])
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -179,7 +196,7 @@ class Meta(commands.Cog):
         serverCount = len(self.client.guilds)
         memberCount = len(set(self.client.get_all_members()))
         botVersion = self.client.version
-        pythonVer = platform.python_version()
+        pythonVer = python_version()
         dpyVer = discord.__version__
 
         embed = discord.Embed(title='Stats',
