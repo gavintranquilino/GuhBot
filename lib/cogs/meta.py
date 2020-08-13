@@ -58,7 +58,7 @@ class Meta(commands.Cog):
                 if x.lower() == 'errors':
                     pass
                 else:
-                    cogs_desc += ('**{}** - {}'.format(x, self.client.cogs[x].__doc__)+'\n')
+                    cogs_desc += ('- **{}** - {}'.format(x, self.client.cogs[x].__doc__)+'\n')
             embed.add_field(name='⚙️Modules', value=cogs_desc[0:len(cogs_desc)-1], inline=False)
             embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
                              icon_url=ctx.author.avatar_url)
@@ -86,7 +86,7 @@ class Meta(commands.Cog):
                             scog_info = ''
                             for c in self.client.get_cog(y.capitalize()).get_commands():
                                 if not c.hidden:
-                                    scog_info += f"**{c.name}** - {c.help}\n"
+                                    scog_info += f"- **{c.name}** - {c.help}\n"
                             embed.add_field(name=f"{cog[0].capitalize()} Module - {self.client.cogs[cog[0].capitalize()].__doc__}", value=scog_info)
                             embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
                                              icon_url=ctx.author.avatar_url)

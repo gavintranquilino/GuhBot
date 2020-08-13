@@ -1,6 +1,6 @@
 from lib.bot import client
 
-version = '0.0.6_1' # Bug Fix: os.sep for all platforms, 8Ball
+version = '1.0.0' # First AWS release, interactive commands, memes
 # v[Release].[Major].[Minor]_[Patch]
 
 client.run(version)

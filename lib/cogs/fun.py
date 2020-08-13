@@ -58,12 +58,13 @@ class Fun(commands.Cog):
     @commands.command(aliases=['animalfact', 'animal_fact'])
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def animal(self, ctx, animal: str):
-        """Random animal facts! Choose from a Dog, Cat, Bird, Panda, Fox, and Koala facts."""
+        """Random animal facts! Choose from a Dog, Cat, Racoon, Whale, Bird, Panda, Kangaroo, Fox, and Koala facts."""
 
-        if (animal := animal.lower()) in ('dog', 'cat', 'bird', 'panda', 'fox', 'koala'):
+        if (animal := animal.lower()) in ('dog', 'cat', 'bird', 'panda', 'fox', 'koala', 'kangaroo', 'racoon', 'whale'):
             fact_url = f"https://some-random-api.ml/facts/{animal.lower()}"
             img_url = f"https://some-random-api.ml/img/{'birb' if animal == 'bird' else animal}"
 
+            await ctx.send(f"🔎 **Searching for {animal} online...**")
             async with request('GET', img_url, headers={}) as response:
                 if response.status == 200:
                     data = await response.json()
@@ -87,7 +88,7 @@ class Fun(commands.Cog):
                     await ctx.send(embed=embed)
 
                 else:
-                    ctx.send(f"API returned a {response.status} status.")
+                    await ctx.send(f"API returned a {response.status} status.")
 
         else:
             await ctx.send(f"Sorry {ctx.author.mention}, but I don\'t know any {animal} facts.")
@@ -178,10 +179,45 @@ class Fun(commands.Cog):
         embed.set_thumbnail(url='https://media.giphy.com/media/ZxblomRBRsdDkSSK9v/giphy.gif')
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(aliases=['av', 'pfp', 'profile', 'profile_pic', 'profile_picture'])
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def dab(self, ctx, member : discord.Member = None):
+    async def avatar(self, ctx, member: discord.Member = None):
+        """Returns the user's profile picture and ID"""
 
+        if not member:
+            member = ctx.author
+
+        embed = discord.Embed(colour=member.colour, timestamp=ctx.message.created_at)
+        embed.add_field(name=f"{member.name}#{member.discriminator}", value=f"User ID: {member.id}")
+        embed.set_image(url=member.avatar_url)
+        await ctx.send(embed=embed)
+
+    @commands.command(aliases=['penis', 'howbig', 'peepee', 'pickle', 'schlong', 'glizzy'], hidden=True)
+    @commands.cooldown(3, 5, commands.BucketType.user)
+    async def pp(self, ctx, member: discord.Member=None):
+        """Revolutionary peepee measurement system. 100% accuracy"""
+
+        length = random.randint(0, 20)
+        size = ''
+        inches = 0
+        for x in range(length):
+            size += '='
+            inches += 1
+        if not member:
+            member = ctx.author
+        embed = discord.Embed(title='🌭Glizzy Machine',
+                              description='With outstanding accuracy, GuhBot measures your *schlong*',
+                              colour=member.colour,
+                              timestamp=ctx.message.created_at)
+        embed.add_field(name=f"🍆{member}'s penis", value=f"8{size}D")
+        embed.add_field(name='📏Size Check', value=f"A whopping {inches} inches!")
+        embed.set_thumbnail(url='https://media.giphy.com/media/qLa4BxKoJphYI/giphy.gif')
+        embed.set_author(name=f"{member.name}#{member.discriminator}", icon_url=member.avatar_url)
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.cooldown(3, 5, commands.BucketType.user)
+    async def dab(self, ctx, member : discord.Member = None):
         """A member of your choice will do an epic dab. 2015 much?"""
 
         if not member:
@@ -204,41 +240,157 @@ class Fun(commands.Cog):
         embed.set_author(name=f"{member.name}#{member.discriminator}", icon_url=member.avatar_url)
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['av', 'pfp', 'profile', 'profile_pic', 'profile_picture'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
-    async def avatar(self, ctx, member: discord.Member = None):
-        """Returns the user's profile picture and ID"""
+    @commands.command()
+    @commands.cooldown(3, 5, commands.BucketType.user)
+    async def wink(self, ctx, member: discord.Member=None, *, reason='for no reason.'):
+        """<Wink Gif Here>"""
 
         if not member:
-            member = ctx.author
+            member =  self.client.user
 
-        embed = discord.Embed(colour=member.colour, timestamp=ctx.message.created_at)
-        embed.add_field(name=f"{member.name}#{member.discriminator}", value=f"User ID: {member.id}")
-        embed.set_image(url=member.avatar_url)
-        await ctx.send(embed=embed)
+        api_url = "https://some-random-api.ml/animu/wink"
+        await ctx.send('🔎 **Searching for gifs online...**')
+        async with request('GET', api_url, headers={}) as response:
+            if response.status == 200:
+                data = await response.json()
+                img = data["link"]
 
-    @commands.command(aliases=['penis', 'howbig', 'peepee', 'pickle', 'schlong', 'glizzy'], hidden=True)
-    @commands.cooldown(1, 5, commands.BucketType.user)
-    async def pp(self, ctx, member: discord.Member = None):
-        """Revolutionary peepee measurement system. 100% accuracy"""
+            else:
+                await ctx.send(f"API returned a {response.status} status.")
 
-        length = random.randint(0, 20)
-        size = ''
-        inches = 0
-        for x in range(length):
-            size += '='
-            inches += 1
+            embed = discord.Embed(description=f"*{ctx.author.mention} winks at {member.mention} {reason}*",
+                                  colour=ctx.author.colour,
+                                  timestamp=ctx.message.created_at)
+            embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
+                             icon_url=ctx.author.avatar_url)
+            embed.set_image(url=img)
+            await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.cooldown(3, 5, commands.BucketType.user)
+    async def pat(self, ctx, member: discord.Member=None, *, reason='for no reason.'):
+        """Pat like you would a dog."""
+
         if not member:
-            member = ctx.author
-        embed = discord.Embed(title='🌭Glizzy Machine',
-                              description='With outstanding accuracy, GuhBot measures your *schlong*',
-                              colour=member.colour,
-                              timestamp=ctx.message.created_at)
-        embed.add_field(name=f"🍆{member}'s penis", value=f"8{size}D")
-        embed.add_field(name='📏Size Check', value=f"A whopping {inches} inches!")
-        embed.set_thumbnail(url='https://media.giphy.com/media/qLa4BxKoJphYI/giphy.gif')
-        embed.set_author(name=f"{member.name}#{member.discriminator}", icon_url=member.avatar_url)
-        await ctx.send(embed=embed)
+            member = self.client.user
+
+        api_url = "https://some-random-api.ml/animu/pat"
+        await ctx.send('🔎 **Searching for gifs online...**')
+        async with request('GET', api_url, headers={}) as response:
+            if response.status == 200:
+                data = await response.json()
+                img = data["link"]
+
+            else:
+                await ctx.send(f"API returned a {response.status} status.")
+
+            embed = discord.Embed(description=f"*{ctx.author.mention} pats {member.mention} {reason}*",
+                                  colour=ctx.author.colour,
+                                  timestamp=ctx.message.created_at)
+            embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
+                             icon_url=ctx.author.avatar_url)
+            embed.set_image(url=img)
+            await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.cooldown(3, 5, commands.BucketType.user)
+    async def hug(self, ctx, member: discord.Member=None, *, reason='for no reason.'):
+        """XOXO without the Xs"""
+
+        if not member:
+            member = self.client.user
+
+        api_url = "https://some-random-api.ml/animu/hug"
+        await ctx.send('🔎 **Searching for gifs online...**')
+        async with request('GET', api_url, headers={}) as response:
+            if response.status == 200:
+                data = await response.json()
+                img = data["link"]
+
+            else:
+                await ctx.send(f"API returned a {response.status} status.")
+
+            embed = discord.Embed(description=f"*{ctx.author.mention} hugs {member.mention} {reason}*",
+                                  colour=ctx.author.colour,
+                                  timestamp=ctx.message.created_at)
+            embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
+                             icon_url=ctx.author.avatar_url)
+            embed.set_image(url=img)
+            await ctx.send(embed=embed)
+
+    @commands.command(aliases=['face_palm', 'facepalms'])
+    @commands.cooldown(3, 5, commands.BucketType.user)
+    async def facepalm(self, ctx, *, reason=' '):
+        """For those frustrating moments"""
+
+        api_url = "https://some-random-api.ml/animu/face-palm"
+        await ctx.send('🔎 **Searching for gifs online...**')
+        async with request('GET', api_url, headers={}) as response:
+            if response.status == 200:
+                data = await response.json()
+                img = data["link"]
+
+            else:
+                await ctx.send(f"API returned a {response.status} status.")
+
+            embed = discord.Embed(description=f"{ctx.author.mention} facepalms {reason}",
+                                  colour=ctx.author.colour,
+                                  timestamp=ctx.message.created_at)
+            embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
+                             icon_url=ctx.author.avatar_url)
+            embed.set_image(url=img)
+            await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.cooldown(3, 5, commands.BucketType.user)
+    async def pikachu(self, ctx, *, reason=' '):
+        """Random gifs and images of your electric, yellow friend"""
+
+        api_url = "https://some-random-api.ml/img/pikachu"
+        await ctx.send('🔎 **Searching for Pikachu online...**')
+        async with request('GET', api_url, headers={}) as response:
+            if response.status == 200:
+                data = await response.json()
+                img = data["link"]
+
+            else:
+                await ctx.send(f"API returned a {response.status} status.")
+
+            embed = discord.Embed(title='Pikachu Pics',
+                                  url='https://some-random-api.ml/',
+                                  colour=ctx.author.colour,
+                                  timestamp=ctx.message.created_at)
+            embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
+                             icon_url=ctx.author.avatar_url)
+            embed.set_image(url=img)
+            await ctx.send(embed=embed)
+
+    @commands.command(aliases=['memes'])
+    @commands.cooldown(5, 3, commands.BucketType.user)
+    async def meme(self, ctx):
+        """Meme Generator ( ͡° ͜ʖ ͡°)"""
+
+        api_url = 'https://meme-api.herokuapp.com/gimme'
+        await ctx.send('🔎 **Locating the funny...**')
+        async with request('GET', api_url, headers={}) as response:
+            if response.status == 200:
+                data = await response.json()
+                source = data['postLink']
+                subreddit = data['subreddit']
+                caption = data['title']
+                meme = data['url']
+
+            else:
+                await ctx.send(f"API returned a {response.status} status.")
+
+            embed = discord.Embed(title=caption,
+                                  url=source,
+                                  description=f"**Subreddit:** [r/{subreddit}](https://www.reddit.com/r/{subreddit}/)",
+                                  colour=ctx.author.colour,
+                                  timestamp=ctx.message.created_at)
+            embed.set_image(url=meme)
+            embed.set_footer(text='PS: Click on the meme above to read small text')
+            await ctx.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_ready(self):
