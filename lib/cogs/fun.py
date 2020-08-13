@@ -172,7 +172,7 @@ class Fun(commands.Cog):
                               timestamp=ctx.message.created_at)
         fields = [('From:', ctx.author.mention, True),
                   ('Question:', f"*{question}*", True),
-                  ('Result:', f"`{responses}`")]
+                  ('Result:', f"`{responses}`", True)]
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
         embed.set_thumbnail(url='https://media.giphy.com/media/ZxblomRBRsdDkSSK9v/giphy.gif')

@@ -5,7 +5,7 @@ from discord.ext.commands import when_mentioned_or
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 # Builtin modules
-from os import getcwd
+from os import getcwd, sep
 from glob import glob
 from pathlib import Path
 from json import load, dump
@@ -18,7 +18,7 @@ print(f"{cwd}\n-----")
 basicConfig(level=INFO)
 
 # Locate all Cogs
-COGS = [path.split('\\')[-1][:-3] for path in glob('./lib/cogs/*.py')]
+COGS = [path.split(sep)[-1][:-3] for path in glob('./lib/cogs/*.py')]
 
 def get_prefix(client, message):
     with open(getcwd()+'/lib/config/prefixes.json', 'r') as file:
@@ -38,6 +38,7 @@ class Ready(object):
     """Cog console logging on startup"""
 
     def __init__(self):
+        print(COGS)
         for cog in COGS:
             # commands.cog = False, fun.cog = False
             setattr(self, cog, False)
