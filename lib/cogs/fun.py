@@ -365,7 +365,7 @@ class Fun(commands.Cog):
             embed.set_image(url=img)
             await ctx.send(embed=embed)
 
-    @commands.command(aliases=['memes'])
+    @commands.command(aliases=['memes', 'joke', 'jokes', 'funny'])
     @commands.cooldown(5, 3, commands.BucketType.user)
     async def meme(self, ctx):
         """Meme Generator ( ͡° ͜ʖ ͡°)"""
@@ -391,6 +391,20 @@ class Fun(commands.Cog):
             embed.set_image(url=meme)
             embed.set_footer(text='PS: Click on the meme above to read small text')
             await ctx.send(embed=embed)
+
+    @commands.command(aliases=['chat', 'guhbot', 'reply', 'guhbot,', 'guh,'])
+    @commands.cooldown(5, 3, commands.BucketType.user)
+    async def chatbot(self, ctx, *, message: str=None):
+        """Have a simple conversation with GuhBot"""
+
+        api_url = f"https://some-random-api.ml/chatbot/?message={message}"
+        await ctx.send('🧠 **Thinking of a response...**', delete_after=3)
+        async with request('GET', api_url, headers={}) as response:
+            if response.status == 200:
+                data = await response.json()
+                reply = data['response']
+
+                await ctx.send(reply)
 
     @commands.Cog.listener()
     async def on_ready(self):

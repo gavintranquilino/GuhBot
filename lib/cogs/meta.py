@@ -191,6 +191,7 @@ class Meta(commands.Cog):
     async def stats(self, ctx):
         """Displays GuhBot's statistics"""
 
+        prefix = self.client.prefix(self.client, ctx.message)
         botUsername = self.client.user.name
         websocketLatency = round(self.client.latency * 1000, 3)
         serverCount = len(self.client.guilds)
@@ -204,9 +205,10 @@ class Meta(commands.Cog):
                               colour=ctx.author.colour,
                               timestamp=ctx.message.created_at)
         fields = [('🏓 Pong', f"Websocket Latency: **{websocketLatency}ms**", True),
-                  ('🔢 Server Count', f"Working in **{serverCount}** servers.", True),
-                  ('👥 Member Count', f"Serving **{memberCount}** members.", True),
+                  ('🔢 Server Count', f"Working in **{serverCount:,d}** servers.", True),
+                  ('👥 Member Count', f"Serving **{memberCount:,d}** members.", True),
                   ('🌐 Version', f"GuhBot Version **{botVersion}**", True),
+                  ('💬 Server Prefix', f"The current server prefix is set to `{prefix}`", True),
                   ('🐍 Python Version', f"{botUsername} runs on **Python {pythonVer}**.", True),
                   ('📜 Discord.py Version', f"{botUsername} runs on **Discord.py {dpyVer}**.", True),
                   ('🙋 Support Server', f"Join {self.client.user.name} [Support Server](https://discord.gg/gKvM8mE)", False)]
