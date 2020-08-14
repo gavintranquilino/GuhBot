@@ -232,7 +232,7 @@ class Meta(commands.Cog):
         embed.set_author(name=self.client.user.name, icon_url=self.client.user.avatar_url)
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(aliases=['invite'])
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def support(self, ctx):
         """Returns both support server invite and the bot invite hyperlink"""
@@ -249,7 +249,7 @@ class Meta(commands.Cog):
         embed.set_footer(text='GuhBean#8433 | GuhBot')
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(aliases=['vote'])
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def upvote(self, ctx):
         """Support GuhBot? Upvote using this command!"""

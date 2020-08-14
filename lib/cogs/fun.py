@@ -88,7 +88,7 @@ class Fun(commands.Cog):
                     await ctx.send(embed=embed)
 
                 else:
-                    await ctx.send(f"API returned a {response.status} status.")
+                    await ctx.send(f"API returned a `{response.status} status.` Try again.")
 
         else:
             await ctx.send(f"Sorry {ctx.author.mention}, but I don\'t know any {animal} facts.")
@@ -256,7 +256,7 @@ class Fun(commands.Cog):
                 img = data["link"]
 
             else:
-                await ctx.send(f"API returned a {response.status} status.")
+                await ctx.send(f"API returned a `{response.status} status.` Try again.")
 
             embed = discord.Embed(description=f"*{ctx.author.mention} winks at {member.mention} {reason}*",
                                   colour=ctx.author.colour,
@@ -282,7 +282,7 @@ class Fun(commands.Cog):
                 img = data["link"]
 
             else:
-                await ctx.send(f"API returned a {response.status} status.")
+                await ctx.send(f"API returned a `{response.status} status.` Try again.")
 
             embed = discord.Embed(description=f"*{ctx.author.mention} pats {member.mention} {reason}*",
                                   colour=ctx.author.colour,
@@ -308,7 +308,7 @@ class Fun(commands.Cog):
                 img = data["link"]
 
             else:
-                await ctx.send(f"API returned a {response.status} status.")
+                await ctx.send(f"API returned a `{response.status} status.` Try again.")
 
             embed = discord.Embed(description=f"*{ctx.author.mention} hugs {member.mention} {reason}*",
                                   colour=ctx.author.colour,
@@ -331,7 +331,7 @@ class Fun(commands.Cog):
                 img = data["link"]
 
             else:
-                await ctx.send(f"API returned a {response.status} status.")
+                await ctx.send(f"API returned a `{response.status} status.` Try again.")
 
             embed = discord.Embed(description=f"{ctx.author.mention} facepalms {reason}",
                                   colour=ctx.author.colour,
@@ -354,7 +354,7 @@ class Fun(commands.Cog):
                 img = data["link"]
 
             else:
-                await ctx.send(f"API returned a {response.status} status.")
+                await ctx.send(f"API returned a `{response.status} status.` Try again.")
 
             embed = discord.Embed(title='Pikachu Pics',
                                   url='https://some-random-api.ml/',
@@ -381,7 +381,7 @@ class Fun(commands.Cog):
                 meme = data['url']
 
             else:
-                await ctx.send(f"API returned a {response.status} status.")
+                await ctx.send(f"API returned a `{response.status} status.` Try again.")
 
             embed = discord.Embed(title=caption,
                                   url=source,
