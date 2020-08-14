@@ -58,7 +58,7 @@ class Fun(commands.Cog):
     @commands.command(aliases=['animalfact', 'animal_fact'])
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def animal(self, ctx, animal: str):
-        """Random animal facts! Choose from a Dog, Cat, Racoon, Whale, Bird, Panda, Kangaroo, Fox, and Koala facts."""
+        """Dog, Cat, Racoon, Whale, Bird, Panda, Kangaroo, Fox, and Koala facts."""
 
         if (animal := animal.lower()) in ('dog', 'cat', 'bird', 'panda', 'fox', 'koala', 'kangaroo', 'racoon', 'whale'):
             fact_url = f"https://some-random-api.ml/facts/{animal.lower()}"
@@ -343,7 +343,7 @@ class Fun(commands.Cog):
 
     @commands.command()
     @commands.cooldown(3, 5, commands.BucketType.user)
-    async def pikachu(self, ctx, *, reason=' '):
+    async def pikachu(self, ctx):
         """Random gifs and images of your electric, yellow friend"""
 
         api_url = "https://some-random-api.ml/img/pikachu"
@@ -368,7 +368,7 @@ class Fun(commands.Cog):
     @commands.command(aliases=['memes', 'joke', 'jokes', 'funny'])
     @commands.cooldown(5, 3, commands.BucketType.user)
     async def meme(self, ctx):
-        """Meme Generator ( ͡° ͜ʖ ͡°)"""
+        """Meme Generator \n( ͡° ͜ʖ ͡°)"""
 
         api_url = 'https://meme-api.herokuapp.com/gimme'
         await ctx.send('🔎 **Locating the funny...**')

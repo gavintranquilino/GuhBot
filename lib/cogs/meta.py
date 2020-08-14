@@ -53,13 +53,14 @@ class Meta(commands.Cog):
                                   colour=ctx.author.colour,
                                   timestamp=ctx.message.created_at)
 
-            cogs_desc = ''
+            cog_list = []
             for x in self.client.cogs:
                 if x.lower() == 'errors':
                     pass
                 else:
-                    cogs_desc += ('- **{}** - {}'.format(x, self.client.cogs[x].__doc__)+'\n')
-            embed.add_field(name='⚙️Modules', value=cogs_desc[0:len(cogs_desc)-1], inline=False)
+                    cog_list.append((x, self.client.cogs[x].__doc__, True))
+            for name, value, inline in cog_list:
+                embed.add_field(name=name, value=value, inline=inline)
             embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
                              icon_url=ctx.author.avatar_url)
             embed.set_thumbnail(url=self.client.user.avatar_url)
@@ -83,11 +84,12 @@ class Meta(commands.Cog):
                                                   description=f"List of GuhBot\'s Modular Commands.\nDo `{self.client.prefix(self.client, ctx.message)}help [command]` for more info on a command",
                                                   colour=ctx.author.colour,
                                                   timestamp=ctx.message.created_at)
-                            scog_info = ''
+                            command_list = []
                             for c in self.client.get_cog(y.capitalize()).get_commands():
                                 if not c.hidden:
-                                    scog_info += f"- **{c.name}** - {c.help}\n"
-                            embed.add_field(name=f"{cog[0].capitalize()} Module - {self.client.cogs[cog[0].capitalize()].__doc__}", value=scog_info)
+                                    command_list.append((f"{c.name}", f"{c.help}", True))
+                            for name, value, inline in command_list:
+                                embed.add_field(name=name, value=value, inline=inline)
                             embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
                                              icon_url=ctx.author.avatar_url)
                             embed.set_thumbnail(url=self.client.user.avatar_url)
