@@ -154,7 +154,7 @@ class Fun(commands.Cog):
     @commands.command(aliases=['8_ball', '8ball'])
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def eightball(self, ctx, *, question):
-        """Digital 8ball. Answers to yes or no questions."""
+        """Digital 8ball. Answers to yes or no questions"""
 
         responses = random.choice(['As I see it, yes.', 'Ask again later.', 'Better not tell you now.',
                                'Cannot predict now.', 'Concentrate and ask again.', 'Don’t count on it.',
