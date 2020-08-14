@@ -128,6 +128,7 @@ class Meta(commands.Cog):
 
     @commands.command(aliases=['change_prefix'])
     @commands.cooldown(3, 10, commands.BucketType.guild)
+    @commands.has_permissions(administrator=True)
     async def prefix(self, ctx, *, new_prefix='guh '):
         """Set a custom prefix for your server"""
 
