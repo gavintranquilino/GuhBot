@@ -241,7 +241,7 @@ class Meta(commands.Cog):
                               description='Use the hyperlinks below to get access to the GuhBot support server',
                               colour=ctx.author.colour,
                               timestamp=ctx.message.created_at)
-        embed.add_field(name='🙋 Support Server', value='[Server Link](https://discord.gg/gKvM8mE)')
+        embed.add_field(name='🙋 Support Server', value='[Server Link](https://discord.gg/PBmfvpU)')
         embed.add_field(name='🤖 Bot Invite',
                         value='[GuhBot invite](https://discord.com/api/oauth2/authorize?client_id=624754986248831017&permissions=536210679&scope=bot)')
         embed.set_author(name=self.client.user.name, icon_url=self.client.user.avatar_url)
