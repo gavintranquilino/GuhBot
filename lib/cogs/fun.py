@@ -180,19 +180,6 @@ class Fun(commands.Cog):
         embed.set_thumbnail(url='https://media.giphy.com/media/ZxblomRBRsdDkSSK9v/giphy.gif')
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['av', 'pfp', 'profile', 'profile_pic', 'profile_picture'])
-    @commands.cooldown(3, 5, commands.BucketType.user)
-    async def avatar(self, ctx, member: discord.Member = None):
-        """Returns the user's profile picture and ID"""
-
-        if not member:
-            member = ctx.author
-
-        embed = discord.Embed(colour=member.colour, timestamp=ctx.message.created_at)
-        embed.add_field(name=f"{member.name}#{member.discriminator}", value=f"User ID: {member.id}")
-        embed.set_image(url=member.avatar_url)
-        await ctx.send(embed=embed)
-
     @commands.command(aliases=['penis', 'howbig', 'peepee', 'pickle', 'schlong', 'glizzy'], hidden=True)
     @commands.cooldown(3, 5, commands.BucketType.user)
     async def pp(self, ctx, member: discord.Member=None):

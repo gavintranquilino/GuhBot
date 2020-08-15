@@ -192,6 +192,19 @@ class Meta(commands.Cog):
         embed.set_footer(text=ctx.guild.name, icon_url=ctx.guild.icon_url)
         await ctx.send(embed=embed)
 
+    @commands.command(aliases=['av', 'pfp', 'profile', 'profile_pic', 'profile_picture'])
+    @commands.cooldown(3, 5, commands.BucketType.user)
+    async def avatar(self, ctx, member: discord.Member = None):
+        """Returns the user's profile picture and ID"""
+
+        if not member:
+            member = ctx.author
+
+        embed = discord.Embed(colour=member.colour, timestamp=ctx.message.created_at)
+        embed.add_field(name=f"{member.name}#{member.discriminator}", value=f"User ID: {member.id}")
+        embed.set_image(url=member.avatar_url)
+        await ctx.send(embed=embed)
+
     @commands.command(aliases=['status', 'statistics', 'info', 'bot'])
     @commands.cooldown(3, 5, commands.BucketType.user)
     async def stats(self, ctx):
