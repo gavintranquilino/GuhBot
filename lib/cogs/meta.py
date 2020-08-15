@@ -43,7 +43,7 @@ class Meta(commands.Cog):
         ))
 
     @commands.command(hidden=True)
-    @commands.cooldown(1, 2, commands.BucketType.user)
+    @commands.cooldown(5, 5, commands.BucketType.user)
     async def help(self, ctx, *cog):
         """Displays this message"""
 
@@ -132,18 +132,21 @@ class Meta(commands.Cog):
     async def prefix(self, ctx, *, new_prefix='guh '):
         """Set a custom prefix for your server"""
 
-        path = getcwd()+'/lib/config/prefixes.json'
-
+        path = getcwd()+'/lib/config/guilds.json'
         with open(path, 'r') as file:
             data = load(file)
-        data[str(ctx.message.guild.id)] = new_prefix
+        if not str(ctx.message.guild.id) in data:
+            data[str(ctx.message.guild.id)] = []
+            data[str(ctx.message.guild.id)].append({'prefix': new_prefix})
+        else:
+            data[str(ctx.message.guild.id)][0]['prefix'] = new_prefix
         with open(path, 'w') as file:
             dump(data, file, indent=4)
 
         await ctx.send(f"Set the custom prefix to `{new_prefix}`\nDo `{new_prefix}prefix` to set it back to the default prefix.\nPing <@!624754986248831017> to check the current prefix.")
 
     @commands.command(aliases=['user_info', 'who_is'])
-    @commands.cooldown(1, 3, commands.BucketType.user)
+    @commands.cooldown(3, 5, commands.BucketType.user)
     async def whois(self, ctx, member: discord.Member = None):
         """Get info on a specific user"""
 
@@ -190,7 +193,7 @@ class Meta(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['status', 'statistics', 'info', 'bot'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(3, 5, commands.BucketType.user)
     async def stats(self, ctx):
         """Displays GuhBot's statistics"""
 
@@ -223,7 +226,7 @@ class Meta(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['latency'])
-    @commands.cooldown(1, 2, commands.BucketType.user)
+    @commands.cooldown(3, 5, commands.BucketType.user)
     async def ping(self, ctx):
         """Returns the Discord API / Websocket latency"""
 
@@ -236,7 +239,7 @@ class Meta(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['invite'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(3, 5, commands.BucketType.user)
     async def support(self, ctx):
         """Returns both support server invite and the bot invite hyperlink"""
 
@@ -253,7 +256,7 @@ class Meta(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['vote'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(3, 5, commands.BucketType.user)
     async def upvote(self, ctx):
         """Support GuhBot? Upvote using this command!"""
 

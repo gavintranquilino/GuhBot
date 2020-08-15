@@ -16,6 +16,7 @@ class Fun(commands.Cog):
     @commands.command(aliases=['say', 'repeat'])
     @commands.has_permissions(mention_everyone=True, embed_links=True,
                               manage_messages=True, attach_files=True)
+    @commands.cooldown(3, 3, commands.BucketType.user)
     async def echo(self, ctx, *, msg):
         """This command repeats what you say."""
 
@@ -41,7 +42,7 @@ class Fun(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['heads', 'tails', 'coin', 'cf'])
-    @commands.cooldown(1, 2, commands.BucketType.user)
+    @commands.cooldown(3, 5, commands.BucketType.user)
     async def coinflip(self, ctx):
         """Coinflip simulation. Heads or Tails"""
 
@@ -94,7 +95,7 @@ class Fun(commands.Cog):
             await ctx.send(f"Sorry {ctx.author.mention}, but I don\'t know any {animal} facts.")
 
     @commands.command(aliases=['dice', 'dice_roll'])
-    @commands.cooldown(1, 1, commands.BucketType.user)
+    @commands.cooldown(3, 5, commands.BucketType.user)
     async def roll(self, ctx, dice='d6'):
         """Roll different types of dice from D4 to D20."""
 
@@ -152,7 +153,7 @@ class Fun(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['8_ball', '8ball'])
-    @commands.cooldown(1, 3, commands.BucketType.user)
+    @commands.cooldown(2, 8, commands.BucketType.user)
     async def eightball(self, ctx, *, question):
         """Digital 8ball. Answers to yes or no questions"""
 
@@ -180,7 +181,7 @@ class Fun(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['av', 'pfp', 'profile', 'profile_pic', 'profile_picture'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(3, 5, commands.BucketType.user)
     async def avatar(self, ctx, member: discord.Member = None):
         """Returns the user's profile picture and ID"""
 
@@ -366,7 +367,7 @@ class Fun(commands.Cog):
             await ctx.send(embed=embed)
 
     @commands.command(aliases=['memes', 'joke', 'jokes', 'funny'])
-    @commands.cooldown(5, 3, commands.BucketType.user)
+    @commands.cooldown(3, 5, commands.BucketType.user)
     async def meme(self, ctx):
         """Meme Generator \n( ͡° ͜ʖ ͡°)"""
 
@@ -393,7 +394,7 @@ class Fun(commands.Cog):
             await ctx.send(embed=embed)
 
     @commands.command(aliases=['chat', 'guhbot', 'reply', 'guhbot,', 'guh,'])
-    @commands.cooldown(5, 3, commands.BucketType.user)
+    @commands.cooldown(3, 5, commands.BucketType.user)
     async def chatbot(self, ctx, *, message: str=None):
         """Have a simple conversation with GuhBot"""
 

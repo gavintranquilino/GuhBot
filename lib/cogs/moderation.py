@@ -29,6 +29,7 @@ class Moderation(commands.Cog):
     @commands.command(aliases=['delete', 'purge'])
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
+    @commands.cooldown(1, 8, commands.BucketType.user)
     async def clear(self, ctx, amount=6):
         """Deletes messsages in a channel."""
 
@@ -48,6 +49,7 @@ class Moderation(commands.Cog):
     @commands.command()
     @commands.guild_only()
     @commands.has_permissions(kick_members=True)
+    @commands.cooldown(1, 8, commands.BucketType.user)
     async def kick(self, ctx, member: discord.Member, *, reason=None):
         """Kicks members from the server (They can still join back)"""
 
@@ -70,6 +72,7 @@ class Moderation(commands.Cog):
     @commands.command()
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
+    @commands.cooldown(1, 8, commands.BucketType.user)
     async def ban(self, ctx, member: discord.Member, *, reason=None):
         """Ban members from the server"""
 
@@ -92,6 +95,7 @@ class Moderation(commands.Cog):
     @commands.command()
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
+    @commands.cooldown(1, 8, commands.BucketType.user)
     async def unban(self, ctx, member: BannedMember, *, reason = None):
 
         """Unban previously banned members from the server"""
@@ -115,6 +119,7 @@ class Moderation(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.has_permissions(kick_members=True)
+    @commands.cooldown(1, 8, commands.BucketType.user)
     async def unkick(self, ctx, member: discord.Member = None, *, reason='Because \"Erdem\" said so.'):
 
         """Wait what? Unkick?"""

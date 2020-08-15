@@ -21,18 +21,29 @@ basicConfig(level=INFO)
 COGS = [path.split(sep)[-1][:-3] for path in glob('./lib/cogs/*.py')]
 
 def get_prefix(client, message):
-    with open(getcwd()+'/lib/config/prefixes.json', 'r') as file:
+    with open(getcwd()+'/lib/config/guilds.json', 'r') as file:
         data = load(file)
     if not str(message.guild.id) in data:
         return when_mentioned_or('guh ')(client, message)
-    return when_mentioned_or(data[str(message.guild.id)])(client, message)
+    else:
+        for element in data[str(message.guild.id)]:
+            for key in element:
+                if key == 'prefix':
+                    prefix = element[key]
+
+        return when_mentioned_or(prefix)(client, message)
 
 def guild_prefix(client, message):
-    with open(getcwd()+'/lib/config/prefixes.json', 'r') as file:
+    with open(getcwd()+'/lib/config/guilds.json', 'r') as file:
         data = load(file)
     if not str(message.guild.id) in data:
         return 'guh '
-    return str(data[str(message.guild.id)])
+    else:
+        for element in data[str(message.guild.id)]:
+            for key in element:
+                if key == 'prefix':
+                    prefix = element[key]
+        return str(prefix)
 
 class Ready(object):
     """Cog console logging on startup"""
@@ -62,6 +73,26 @@ class Bot(BotBase):
         self.ready = False
         self.cogs_ready = Ready()
         self.scheduler = AsyncIOScheduler()
+        self.colours = {'WHITE': 0xFFFFFF,
+                        'AQUA': 0x1ABC9C,
+                        'GREEN': 0x2ECC71,
+                        'BLUE': 0x3498DB,
+                        'PURPLE': 0x9B59B6,
+                        'LUMINOUS_VIVID_PINK': 0xE91E63,
+                        'GOLD': 0xF1C40F,
+                        'ORANGE': 0xE67E22,
+                        'RED': 0xE74C3C,
+                        'NAVY': 0x34495E,
+                        'DARK_AQUA': 0x11806A,
+                        'DARK_GREEN': 0x1F8B4C,
+                        'DARK_BLUE': 0x206694,
+                        'DARK_PURPLE': 0x71368A,
+                        'DARK_VIVID_PINK': 0xAD1457,
+                        'DARK_GOLD': 0xC27C0E,
+                        'DARK_ORANGE': 0xA84300,
+                        'DARK_RED': 0x992D22,
+                        'DARK_NAVY': 0x2C3E50}
+        self.colour_list = [c for c in self.colours.values()]
 
         super().__init__(command_prefix=get_prefix,
                          case_insensitive=True,
@@ -126,6 +157,7 @@ class Bot(BotBase):
         print(f"Removed from server {guild.name}: {guild.id}")
 
         # --When you need to delete json prefixes for servers you aren't in--
+        # from json import dump
         # with open(getcwd()+'/lib/config/prefixes.json', 'r') as file:
         #     data = load(file)
         #
