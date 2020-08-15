@@ -71,6 +71,7 @@ class Bot(BotBase):
     def __init__(self):
         self.prefix = guild_prefix
         self.ready = False
+        self.support_url = 'https://discord.gg/PBmfvpU'
         self.cogs_ready = Ready()
         self.scheduler = AsyncIOScheduler()
         self.colours = {'WHITE': 0xFFFFFF,

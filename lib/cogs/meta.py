@@ -230,7 +230,7 @@ class Meta(commands.Cog):
                   ('💬 Server Prefix', f"The current server prefix is set to `{prefix}`", True),
                   ('🐍 Python Version', f"{botUsername} runs on **Python {pythonVer}**.", True),
                   ('📜 Discord.py Version', f"{botUsername} runs on **Discord.py {dpyVer}**.", True),
-                  ('🙋 Support Server', f"Join {self.client.user.name} [Support Server](https://discord.gg/gKvM8mE)", False)]
+                  ('🙋 Support Server', f"Join {self.client.user.name} [Support Server]({self.client.support_url})", False)]
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
         embed.set_footer(text=f"GuhBean#8433 | {botUsername}")
@@ -260,7 +260,7 @@ class Meta(commands.Cog):
                               description='Use the hyperlinks below to get access to the GuhBot support server',
                               colour=ctx.author.colour,
                               timestamp=ctx.message.created_at)
-        embed.add_field(name='🙋 Support Server', value='[Server Link](https://discord.gg/PBmfvpU)')
+        embed.add_field(name='🙋 Support Server', value=f"[Support Server]({self.client.support_url})")
         embed.add_field(name='🤖 Bot Invite',
                         value='[GuhBot invite](https://discord.com/api/oauth2/authorize?client_id=624754986248831017&permissions=536210679&scope=bot)')
         embed.set_author(name=self.client.user.name, icon_url=self.client.user.avatar_url)
