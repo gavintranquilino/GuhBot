@@ -7,6 +7,7 @@ from apscheduler.triggers.cron import CronTrigger
 from os import getcwd
 from json import load, dump
 from platform import python_version
+from random import choice
 
 
 class Meta(commands.Cog):
@@ -219,11 +220,13 @@ class Meta(commands.Cog):
         pythonVer = python_version()
         dpyVer = discord.__version__
 
+        ping_title = choice(['🏓 Pong', '🏓 Ping'])
+
         embed = discord.Embed(title='Stats',
                               description=f"List of {botUsername}'s statistics",
                               colour=ctx.author.colour,
                               timestamp=ctx.message.created_at)
-        fields = [('🏓 Pong', f"Websocket Latency: **{websocketLatency}ms**", True),
+        fields = [(f"{ping_title}", f"Websocket Latency: **{websocketLatency}ms**", True),
                   ('🔢 Server Count', f"Working in **{serverCount:,d}** servers.", True),
                   ('👥 Member Count', f"Serving **{memberCount:,d}** members.", True),
                   ('🌐 Version', f"GuhBot Version **{botVersion}**", True),
@@ -244,7 +247,8 @@ class Meta(commands.Cog):
         """Returns the Discord API / Websocket latency"""
 
         websocketLatency = round(self.client.latency * 1000, 3)
-        embed = discord.Embed(name='🏓 Pong',
+        ping_title = choice(['🏓 Pong', '🏓 Ping'])
+        embed = discord.Embed(title=choice([ping_title]),
                               description=f"Websocket Latency: **{websocketLatency}ms**",
                               colour=ctx.author.colour,
                               timestamp=ctx.message.created_at)
