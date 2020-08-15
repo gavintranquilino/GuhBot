@@ -149,7 +149,7 @@ class Bot(BotBase):
         elif message.content.startswith(f"<@!{self.user.id}>") and \
             len(message.content) == len(f"<@!{self.user.id}>"
         ):
-            await message.channel.send(f"Hey {message.author.mention}! My prefix here is `{self.prefix(self, message)}`", delete_after=10)
+            await message.channel.send(f"Hey {message.author.mention}! My prefix here is `{self.prefix(self, message)}`\nDo `{self.prefix(self, message)}help` get started.", delete_after=10)
 
         await self.process_commands(message)
 

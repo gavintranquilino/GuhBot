@@ -15,7 +15,7 @@ class Meta(commands.Cog):
 
     def __init__(self, client):
         self.client = client
-        self._message = 'watching @GuhBot help | {guilds:,} servers & {users:,} users | version {version:s}'
+        self._message = 'watching @GuhBot | {guilds:,} servers & {users:,} users | version {version:s}'
 
         client.scheduler.add_job(self.set, CronTrigger(second=0))
 
