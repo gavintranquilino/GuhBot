@@ -5,9 +5,10 @@ from apscheduler.triggers.cron import CronTrigger
 
 # Builtin modules
 from os import getcwd
+from time import time
+from random import choice
 from json import load, dump
 from platform import python_version
-from random import choice
 
 
 class Meta(commands.Cog):
@@ -206,7 +207,7 @@ class Meta(commands.Cog):
         embed.set_image(url=member.avatar_url)
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['status', 'statistics', 'info', 'bot'])
+    @commands.command(aliases=['status', 'statistics', 'info'])
     @commands.cooldown(3, 5, commands.BucketType.user)
     async def stats(self, ctx):
         """Displays GuhBot's statistics"""
@@ -221,39 +222,57 @@ class Meta(commands.Cog):
         dpyVer = discord.__version__
 
         ping_title = choice(['🏓 Pong', '🏓 Ping'])
+        content = ''
+        content += f"Websocket Latency: **{websocketLatency}ms**\n"
+        loading = discord.Embed(description='Loading...', colour=ctx.author.colour)
+
+        start = time()
+        message = await ctx.send(embed=loading)
+        end = time()
+
+        commandLatency = round((end-start)*1000, 3)
+        content += f"Command Latency: **{commandLatency}ms**"
 
         embed = discord.Embed(title='Stats',
                               description=f"List of {botUsername}'s statistics",
                               colour=ctx.author.colour,
                               timestamp=ctx.message.created_at)
-        fields = [(f"{ping_title}", f"Websocket Latency: **{websocketLatency}ms**", True),
-                  ('🔢 Server Count', f"Working in **{serverCount:,d}** servers.", True),
+        fields = [('🔢 Server Count', f"Working in **{serverCount:,d}** servers.", True),
                   ('👥 Member Count', f"Serving **{memberCount:,d}** members.", True),
                   ('🌐 Version', f"GuhBot Version **{botVersion}**", True),
-                  ('💬 Server Prefix', f"The current server prefix is set to `{prefix}`", True),
+                  ('💬 Server Prefix', f"This server's prefix is `{prefix}`", True),
                   ('🐍 Python Version', f"{botUsername} runs on **Python {pythonVer}**.", True),
-                  ('📜 Discord.py Version', f"{botUsername} runs on **Discord.py {dpyVer}**.", True),
+                  ('📜 Discord.py Version', f"{botUsername} runs on **Discord.py {dpyVer}**.", False),
+                  (f"{ping_title}", content, True),
                   ('🙋 Support Server', f"Join {self.client.user.name} [Support Server]({self.client.support_url})", False)]
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
         embed.set_footer(text=f"GuhBean#8433 | {botUsername}")
         embed.set_author(name=botUsername, icon_url=self.client.user.avatar_url)
         embed.set_thumbnail(url=self.client.user.avatar_url)
-        await ctx.send(embed=embed)
+        await message.edit(embed=embed)
 
     @commands.command(aliases=['latency'])
     @commands.cooldown(3, 5, commands.BucketType.user)
     async def ping(self, ctx):
         """Returns the Discord API / Websocket latency"""
 
-        websocketLatency = round(self.client.latency * 1000, 3)
+        websocketLatency = round(self.client.latency*1000, 3)
         ping_title = choice(['🏓 Pong', '🏓 Ping'])
-        embed = discord.Embed(title=choice([ping_title]),
-                              description=f"Websocket Latency: **{websocketLatency}ms**",
-                              colour=ctx.author.colour,
+        content = ''
+        content += f"Websocket Latency: **{websocketLatency}ms**\n"
+        loading = discord.Embed(description='Loading...', colour=ctx.author.colour)
+        start = time()
+        message = await ctx.send(embed=loading)
+        end = time()
+
+        commandLatency = round((end-start)*1000, 3)
+        content += f"Command Latency: **{commandLatency}ms**"
+        embed = discord.Embed(colour=ctx.author.colour,
                               timestamp=ctx.message.created_at)
         embed.set_author(name=self.client.user.name, icon_url=self.client.user.avatar_url)
-        await ctx.send(embed=embed)
+        embed.add_field(name=choice([ping_title]), value=content)
+        await message.edit(embed=embed)
 
     @commands.command(aliases=['invite'])
     @commands.cooldown(3, 5, commands.BucketType.user)

@@ -1,6 +1,6 @@
 from lib.bot import client
 
-version = '1.0.1_9' # ping command update
+version = '1.0.2' # Added command latency in ping
 # v[Release].[Major].[Minor]_[Patch]
 
 client.run(version)
