@@ -14,14 +14,17 @@ class Fun(commands.Cog):
         self.client = client
 
     @commands.command(aliases=['say', 'repeat'])
-    @commands.has_permissions(mention_everyone=True, embed_links=True,
-                              manage_messages=True, attach_files=True)
     @commands.cooldown(3, 3, commands.BucketType.user)
+    @commands.has_permissions(embed_links=True)
     async def echo(self, ctx, *, msg):
         """This command repeats what you say."""
 
-        await ctx.message.delete()
-        await ctx.send(msg)
+        try:
+            await ctx.message.delete()
+        except:
+            pass
+        embed = discord.Embed(description=f"{msg}", colour=ctx.author.colour)
+        await ctx.send(embed=embed)
 
     @commands.command(aliases=['decision'])
     @commands.cooldown(1, 3, commands.BucketType.user)
