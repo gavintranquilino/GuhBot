@@ -14,7 +14,7 @@ class Misc(commands.Cog):
 
     @commands.command(aliases=['corona', 'coronavirus', 'covid19', 'covid-19'])
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def covid(self, ctx, *, country: str=None):
+    async def covid(self, ctx, *, country: str = None):
         """Daily COVID-19 summary"""
 
         # BUG: UnboundLocalError with unknown country
@@ -67,17 +67,117 @@ class Misc(commands.Cog):
                           ('Help Stop COVID-19', '[Advice to the Public](https://www.who.int/emergencies/diseases/novel-coronavirus-2019/advice-for-public)', True)]
                 for name, value, inline in fields:
                     embed.add_field(name=name, value=value, inline=inline)
-                embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/239446877953720321/691020838379716698/unknown.png')
+                embed.set_thumbnail(
+                    url='https://cdn.discordapp.com/attachments/239446877953720321/691020838379716698/unknown.png')
                 embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
                                  icon_url=ctx.author.avatar_url)
                 await ctx.send(embed=embed)
             except UnboundLocalError:
                 await ctx.send(f"Sorry {ctx.author.mention}, I couldn\'t find COVID-19 stats for `{country}`")
 
+    @commands.command(aliases=['server_stats'])
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def server_info(self, ctx):
+        """Get information on the current server"""
+
+        embed = discord.Embed(title='Server Information',
+                              colour=ctx.guild.owner.colour,
+                              timestamp=ctx.message.created_at)
+
+        embed.set_thumbnail(url=ctx.guild.icon_url)
+
+        statuses = [len(list(filter(lambda m: str(m.status) == 'online', ctx.guild.members))),
+                    len(list(filter(lambda m: str(m.status) == 'idle', ctx.guild.members))),
+                    len(list(filter(lambda m: str(m.status) == 'dnd', ctx.guild.members))),
+                    len(list(filter(lambda m: str(m.status) == 'offline', ctx.guild.members)))]
+
+        fields = [('💳ID', ctx.guild.id, True),
+                  ('👑Owner', ctx.guild.owner, True),
+                  ('🌎 Region', ctx.guild.region, True),
+                  ('🕑 Created At', ctx.guild.created_at.strftime('%d/%m/%Y %H:%M:%S'), True),
+                  ('👥 Members', len(ctx.guild.members), True),
+                  ('👤 Humans', len(list(filter(lambda m: not m.bot, ctx.guild.members))), True),
+                  ('🤖 Bots', len(list(filter(lambda m: m.bot, ctx.guild.members))), True),
+                  ('🔨 Banned Members', len(await ctx.guild.bans()), True),
+                  ('💭 Statuses',
+                   f"🟢 {statuses[0]} 🟠 {statuses[1]} 🔴 {statuses[2]} ⚪ {statuses[3]}", True),
+                  ('📜 Text channels', len(ctx.guild.text_channels), True),
+                  ('🔊 Voice channels', len(ctx.guild.voice_channels), True),
+                  ('🌀 Categories', len(ctx.guild.categories), True),
+                  ('🏁 Roles', len(ctx.guild.roles), True),
+                  ('✉️ Invites', len(await ctx.guild.invites()), True),
+                  ('\u200b', '\u200b', True)]
+
+        for name, value, inline in fields:
+            embed.add_field(name=name, value=value, inline=inline)
+
+        await ctx.send(embed=embed)
+
+    @commands.command(aliases=['av', 'pfp', 'profile', 'profile_pic', 'profile_picture'])
+    @commands.cooldown(3, 5, commands.BucketType.user)
+    async def avatar(self, ctx, member: discord.Member = None):
+        """Returns the user's profile picture and ID"""
+
+        if not member:
+            member = ctx.author
+
+        embed = discord.Embed(colour=member.colour, timestamp=ctx.message.created_at)
+        embed.add_field(name=f"{member.name}#{member.discriminator}", value=f"User ID: {member.id}")
+        embed.set_image(url=member.avatar_url)
+        await ctx.send(embed=embed)
+
+    @commands.command(aliases=['user_info', 'who_is'])
+    @commands.cooldown(3, 5, commands.BucketType.user)
+    async def whois(self, ctx, member: discord.Member = None):
+        """Get info on a specific user"""
+
+        if not member:
+            member = ctx.author
+
+        roles = [role for role in member.roles]
+        lenroles = len(roles)
+        if lenroles == 1:
+            mentions = f"@everyone"
+            top_role = '@everyone'
+            lenroles = lenroles
+        else:
+            mentions = " ".join([r.mention for r in member.roles if r != ctx.guild.default_role])
+            top_role = member.top_role.mention
+            lenroles = lenroles - 1
+        if member == ctx.guild.owner:
+            acknowledgements = 'Server Owner'
+        elif member == self.client.user:
+            acknowledgements = 'Hey that\'s me!'
+        elif member.bot:
+            acknowledgements = 'Discord Bot'
+        elif member.guild_permissions.administrator:
+            acknowledgements = 'Server Admin'
+        else:
+            acknowledgements = None
+
+        embed = discord.Embed(description=f"{member.mention}\nID:{member.id}",
+                              colour=member.colour,
+                              timestamp=ctx.message.created_at)
+        fields = [('Nickname', member.display_name, True),
+                  ('Status', member.status, True),
+                  ('Joined', member.joined_at.strftime('%a, %b %d, %Y, %I:%M %p'), False),
+                  ('Registered', member.created_at.strftime('%a, %b %d, %Y, %I:%M %p'), True),
+                  (f"Roles [{lenroles}]", mentions, False),
+                  ('Highest Role', top_role, True)]
+        for name, value, inline in fields:
+            embed.add_field(name=name, value=value, inline=inline)
+        if acknowledgements:
+            embed.add_field(name='Acknowledgements', value=acknowledgements)
+        embed.set_thumbnail(url=member.avatar_url)
+        embed.set_author(name=f"{member.name}#{member.discriminator}", icon_url=member.avatar_url)
+        embed.set_footer(text=ctx.guild.name, icon_url=ctx.guild.icon_url)
+        await ctx.send(embed=embed)
+
     @commands.Cog.listener()
     async def on_ready(self):
         if not self.client.ready:
             self.client.cogs_ready.ready_up('Misc')
+
 
 def setup(client):
     client.add_cog(Misc(client))

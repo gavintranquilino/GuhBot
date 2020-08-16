@@ -74,7 +74,7 @@ class Meta(commands.Cog):
                                       colour=discord.Colour.red(),
                                       timestamp=ctx.message.created_at)
                 embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
-                                icon_url=ctx.author.avatar_url)
+                                 icon_url=ctx.author.avatar_url)
                 embed.set_thumbnail(url=self.client.user.avatar_url)
                 await ctx.send(embed=embed)
             else:
@@ -147,66 +147,6 @@ class Meta(commands.Cog):
 
         await ctx.send(f"Set the custom prefix to `{new_prefix}`\nDo `{new_prefix}prefix` to set it back to the default prefix.\nPing <@!624754986248831017> to check the current prefix.")
 
-    @commands.command(aliases=['user_info', 'who_is'])
-    @commands.cooldown(3, 5, commands.BucketType.user)
-    async def whois(self, ctx, member: discord.Member = None):
-        """Get info on a specific user"""
-
-        if not member:
-            member = ctx.author
-
-        roles = [role for role in member.roles]
-        lenroles = len(roles)
-        if lenroles == 1:
-            mentions = f"@everyone"
-            top_role = '@everyone'
-            lenroles = lenroles
-        else:
-            mentions = " ".join([r.mention for r in member.roles if r != ctx.guild.default_role])
-            top_role = member.top_role.mention
-            lenroles = lenroles - 1
-        if member == ctx.guild.owner:
-            acknowledgements = 'Server Owner'
-        elif member == self.client.user:
-            acknowledgements = 'Hey that\'s me!'
-        elif member.bot:
-            acknowledgements = 'Discord Bot'
-        elif member.guild_permissions.administrator:
-            acknowledgements = 'Server Admin'
-        else:
-            acknowledgements = None
-
-        embed = discord.Embed(description=f"{member.mention}\nID:{member.id}",
-                              colour=member.colour,
-                              timestamp=ctx.message.created_at)
-        fields = [('Nickname', member.display_name, True),
-                  ('Status', member.status, True),
-                  ('Joined', member.joined_at.strftime('%a, %b %d, %Y, %I:%M %p'), False),
-                  ('Registered', member.created_at.strftime('%a, %b %d, %Y, %I:%M %p'), True),
-                  (f"Roles [{lenroles}]", mentions, False),
-                  ('Highest Role', top_role, True)]
-        for name, value, inline in fields:
-            embed.add_field(name=name, value=value, inline=inline)
-        if acknowledgements:
-            embed.add_field(name='Acknowledgements', value=acknowledgements)
-        embed.set_thumbnail(url=member.avatar_url)
-        embed.set_author(name=f"{member.name}#{member.discriminator}", icon_url=member.avatar_url)
-        embed.set_footer(text=ctx.guild.name, icon_url=ctx.guild.icon_url)
-        await ctx.send(embed=embed)
-
-    @commands.command(aliases=['av', 'pfp', 'profile', 'profile_pic', 'profile_picture'])
-    @commands.cooldown(3, 5, commands.BucketType.user)
-    async def avatar(self, ctx, member: discord.Member = None):
-        """Returns the user's profile picture and ID"""
-
-        if not member:
-            member = ctx.author
-
-        embed = discord.Embed(colour=member.colour, timestamp=ctx.message.created_at)
-        embed.add_field(name=f"{member.name}#{member.discriminator}", value=f"User ID: {member.id}")
-        embed.set_image(url=member.avatar_url)
-        await ctx.send(embed=embed)
-
     @commands.command(aliases=['status', 'statistics', 'info'])
     @commands.cooldown(3, 5, commands.BucketType.user)
     async def stats(self, ctx):
@@ -242,7 +182,8 @@ class Meta(commands.Cog):
                   ('🌐 Version', f"GuhBot Version **{botVersion}**", True),
                   ('💬 Server Prefix', f"This server's prefix is `{prefix}`", True),
                   ('🐍 Python Version', f"{botUsername} runs on **Python {pythonVer}**.", True),
-                  ('📜 Discord.py Version', f"{botUsername} runs on **Discord.py {dpyVer}**.", False),
+                  ('📜 Discord.py Version',
+                   f"{botUsername} runs on **Discord.py {dpyVer}**.", False),
                   (f"{ping_title}", content, True),
                   ('🙋 Support Server', f"Join {self.client.user.name} [Support Server]({self.client.support_url})", False)]
         for name, value, inline in fields:
@@ -283,7 +224,8 @@ class Meta(commands.Cog):
                               description='Use the hyperlinks below to get access to the GuhBot support server',
                               colour=ctx.author.colour,
                               timestamp=ctx.message.created_at)
-        embed.add_field(name='🙋 Support Server', value=f"[Support Server]({self.client.support_url})")
+        embed.add_field(name='🙋 Support Server',
+                        value=f"[Support Server]({self.client.support_url})")
         embed.add_field(name='🤖 Bot Invite',
                         value='[GuhBot invite](https://discord.com/api/oauth2/authorize?client_id=624754986248831017&permissions=536210679&scope=bot)')
         embed.set_author(name=self.client.user.name, icon_url=self.client.user.avatar_url)
@@ -363,6 +305,7 @@ class Meta(commands.Cog):
     async def on_ready(self):
         if not self.client.ready:
             self.client.cogs_ready.ready_up('Meta')
+
 
 def setup(client):
     client.add_cog(Meta(client))
