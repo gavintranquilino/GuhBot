@@ -301,7 +301,7 @@ class Meta(commands.Cog):
                               colour=ctx.author.colour,
                               timestamp=ctx.message.created_at)
         fields = [('Discord Bot List', '[discordbotlist.com](https://discordbotlist.com/bots/guhbot/upvote)', True),
-                  ('Bots For Discord', '[botsfordiscord.com](https://botsfordiscord.com/bot/624754986248831017)', True)]
+                  ('Bots For Discord', '[botsfordiscord.com](https://botsfordiscord.com/bot/624754986248831017/vote)', True)]
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
         embed.set_author(name=self.client.user.name, icon_url=self.client.user.avatar_url)
