@@ -2,6 +2,7 @@
 import discord
 from discord.ext import commands
 from apscheduler.triggers.cron import CronTrigger
+from psutil import Process, virtual_memory, cpu_percent
 
 # Builtin modules
 from os import getcwd
@@ -9,6 +10,7 @@ from time import time
 from random import choice
 from json import load, dump
 from platform import python_version
+from datetime import datetime, timedelta
 
 
 class Meta(commands.Cog):
@@ -152,6 +154,12 @@ class Meta(commands.Cog):
     async def stats(self, ctx):
         """Displays GuhBot's statistics"""
 
+        def strfdelta(tdelta, fmt):
+            d = {'days': tdelta.days}
+            d['hours'], rem = divmod(tdelta.seconds, 3600)
+            d['minutes'], d['seconds'] = divmod(rem, 60)
+            return fmt.format(**d)
+
         prefix = self.client.prefix(self.client, ctx.message)
         botUsername = self.client.user.name
         websocketLatency = round(self.client.latency * 1000, 3)
@@ -160,6 +168,14 @@ class Meta(commands.Cog):
         botVersion = self.client.version
         pythonVer = python_version()
         dpyVer = discord.__version__
+        proc = Process()
+        with proc.oneshot():
+            uptime = timedelta(seconds=time()-proc.create_time())
+            cpu_time = timedelta(seconds=(cpu := proc.cpu_times()).system + cpu.user)
+            cpu_usage = f"**{cpu_percent()}%**"
+            mem_total = virtual_memory().total / (1024**2)
+            mem_of_total = proc.memory_percent()
+            mem_usage = mem_total * (mem_of_total / 100)
 
         ping_title = choice(['🏓 Pong', '🏓 Ping'])
         content = ''
@@ -183,8 +199,12 @@ class Meta(commands.Cog):
                   ('💬 Server Prefix', f"This server's prefix is `{prefix}`", True),
                   ('🐍 Python Version', f"{botUsername} runs on **Python {pythonVer}**.", True),
                   ('📜 Discord.py Version',
-                   f"{botUsername} runs on **Discord.py {dpyVer}**.", False),
+                   f"{botUsername} runs on **Discord.py {dpyVer}**.", True),
                   (f"{ping_title}", content, True),
+                  ('⏰ Uptime', strfdelta(uptime, "{days} day(s)\n{hours} hour(s)\n{minutes} minute(s)\n{seconds} second(s)"), True),
+                  ('💾 CPU Time', strfdelta(cpu_time, "{days} day(s)\n{hours} hour(s)\n{minutes} minute(s)\n{seconds} second(s)"), True),
+                  ('⚙️ CPU Usage', cpu_usage, True),
+                  ('💽 Memory Usage', f"{mem_usage:,.3f} / {mem_total:,.0f} MiB ({mem_of_total:.0f}%)", True),
                   ('🙋 Support Server', f"Join {self.client.user.name} [Support Server]({self.client.support_url})", False)]
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
