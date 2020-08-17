@@ -397,6 +397,20 @@ class Fun(commands.Cog):
 
                 await ctx.send(reply)
 
+    @commands.command(aliases=['emote'])
+    @commands.cooldown(3, 5, commands.BucketType.user)
+    async def emoji(self, ctx, *, emoji: discord.Emoji):
+        """Send animated server emojis"""
+
+        if emoji.is_usable:
+            try:
+                await ctx.message.delete()
+            except:
+                pass
+            await ctx.send(f"<{'a' if emoji.animated else ''}:{emoji.name}:{emoji.id}>")
+        else:
+            await ctx.send(f"{ctx.author.mention}, I can\'t use that emoji.")
+
     @commands.Cog.listener()
     async def on_ready(self):
         if not self.client.ready:
