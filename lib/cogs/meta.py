@@ -245,7 +245,7 @@ class Meta(commands.Cog):
         fields = [('Discord Bot List', '[discordbotlist.com](https://discordbotlist.com/bots/guhbot/upvote)', True),
                   ('Bots For Discord', '[botsfordiscord.com](https://botsfordiscord.com/bot/624754986248831017/vote)', True),
                   ('Top-Bots', '[top-bots.xyz](https://top-bots.xyz/bot/624754986248831017)', True),
-                  ('Discord Boats', '[discord.boats](https://discord.boats/bot/624754986248831017)', True),
+                  ('Discord Boats', '[discord.boats](https://discord.boats/bot/624754986248831017/rate)', True),
                   ('Discord Bots', '[discord.bots.gg](https://discord.bots.gg/bots/624754986248831017)', True),
                   ("\u200b", "\u200b", True)]
         for name, value, inline in fields:
