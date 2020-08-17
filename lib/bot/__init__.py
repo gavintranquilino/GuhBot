@@ -1,14 +1,15 @@
 # 3rd party modules
 from asyncio import sleep
 from discord.ext.commands import Bot as BotBase
-from discord.ext.commands import when_mentioned_or
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from discord.ext.commands import when_mentioned_or, CooldownMapping, BucketType
 
 # Builtin modules
-from os import getcwd, sep
 from glob import glob
 from pathlib import Path
+from os import getcwd, sep
 from json import load, dump
+from datetime import timezone
 from logging import basicConfig, INFO
 
 # Logging
@@ -74,6 +75,7 @@ class Bot(BotBase):
         self.support_url = 'https://discord.gg/PBmfvpU'
         self.cogs_ready = Ready()
         self.scheduler = AsyncIOScheduler()
+        self.cooldown = CooldownMapping.from_cooldown(1, 5, BucketType.user)
         self.colours = {'WHITE': 0xFFFFFF,
                         'AQUA': 0x1ABC9C,
                         'GREEN': 0x2ECC71,
@@ -143,14 +145,29 @@ class Bot(BotBase):
         print('Disconnected')
 
     async def on_message(self, message):
+
         if message.author.bot:
             pass
 
-        # Mentionable prefix
         elif message.content.startswith(f"<@!{self.user.id}>") and \
             len(message.content) == len(f"<@!{self.user.id}>"
         ):
-            await message.channel.send(f"Hey {message.author.mention}! My prefix here is `{self.prefix(self, message)}`\nDo `{self.prefix(self, message)}help` get started.", delete_after=10)
+
+            bucket = self.cooldown.get_bucket(message)
+            retry_after = bucket.update_rate_limit()   
+            if retry_after:
+                await message.channel.send(f"Slow Down {message.author.mention}! Please wait {round(retry_after, 3)} seconds.")
+            else:
+                await message.channel.send(f"Hey {message.author.mention}! My prefix here is `{self.prefix(self, message)}`\nDo `{self.prefix(self, message)}help` get started.", delete_after=10)
+
+            # if retry_after:
+            #     print(retry_after)
+            #     await message.channel.send(f"Slow Down {message.author.mention}!")
+            #     print('[+] slow down')
+            # else:
+            #     print(retry_after)
+            #     await message.channel.send(f"Hey {message.author.mention}! My prefix here is `{self.prefix(self, message)}`\nDo `{self.prefix(self, message)}help` get started.", delete_after=10)
+
 
         await self.process_commands(message)
 
