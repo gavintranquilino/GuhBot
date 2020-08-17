@@ -411,6 +411,14 @@ class Fun(commands.Cog):
         else:
             await ctx.send(f"{ctx.author.mention}, I can\'t use that emoji.")
 
+    @commands.command()
+    @commands.cooldown(3, 5, commands.BucketType.user)
+    async def enlarge(self, ctx, *, emoji: discord.Emoji):
+        """Get a gif or image version of a custom emoji"""
+
+        if emoji.is_usable:
+            await ctx.send(emoji.url)
+
     @commands.Cog.listener()
     async def on_ready(self):
         if not self.client.ready:
