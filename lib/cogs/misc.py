@@ -16,7 +16,7 @@ class Misc(commands.Cog):
         self.client = client
 
     @commands.command(aliases=['corona', 'coronavirus', 'covid19', 'covid-19'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 8, commands.BucketType.user)
     async def covid(self, ctx, *, country: str = None):
         """Daily COVID-19 summary"""
 
@@ -120,7 +120,7 @@ class Misc(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['av', 'pfp', 'profile', 'profile_pic', 'profile_picture'])
-    @commands.cooldown(3, 5, commands.BucketType.user)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def avatar(self, ctx, member: discord.Member = None):
         """Returns the user's profile picture and ID"""
 
@@ -133,7 +133,7 @@ class Misc(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['user_info', 'who_is'])
-    @commands.cooldown(3, 5, commands.BucketType.user)
+    @commands.cooldown(2, 5, commands.BucketType.user)
     async def whois(self, ctx, member: discord.Member = None):
         """Get info on a specific user"""
 

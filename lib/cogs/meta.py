@@ -47,7 +47,7 @@ class Meta(commands.Cog):
         ))
 
     @commands.command(hidden=True)
-    @commands.cooldown(5, 5, commands.BucketType.user)
+    @commands.cooldown(2, 5, commands.BucketType.user)
     async def help(self, ctx, *cog):
         """Displays this message"""
 
@@ -131,7 +131,7 @@ class Meta(commands.Cog):
                     await ctx.send(embed=embed)
 
     @commands.command(aliases=['change_prefix'])
-    @commands.cooldown(3, 10, commands.BucketType.guild)
+    @commands.cooldown(2, 10, commands.BucketType.guild)
     @commands.has_permissions(administrator=True)
     async def prefix(self, ctx, *, new_prefix: str='guh '):
         """Set a custom prefix for your server"""
@@ -146,7 +146,7 @@ class Meta(commands.Cog):
         await ctx.send(f"Set the custom prefix to `{new_prefix}`\nDo `{new_prefix}prefix` to set it back to the default prefix.\nPing {self.client.user.mention} to check the current prefix.")
 
     @commands.command(aliases=['status', 'statistics', 'info'])
-    @commands.cooldown(3, 5, commands.BucketType.user)
+    @commands.cooldown(2, 5, commands.BucketType.user)
     async def stats(self, ctx):
         """Displays GuhBot's statistics"""
 
@@ -210,7 +210,7 @@ class Meta(commands.Cog):
         await message.edit(embed=embed)
 
     @commands.command(aliases=['latency'])
-    @commands.cooldown(3, 5, commands.BucketType.user)
+    @commands.cooldown(2, 5, commands.BucketType.user)
     async def ping(self, ctx):
         """Returns the Discord API / Websocket latency"""
 
@@ -232,7 +232,7 @@ class Meta(commands.Cog):
         await message.edit(embed=embed)
 
     @commands.command(aliases=['invite'])
-    @commands.cooldown(3, 5, commands.BucketType.user)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def support(self, ctx):
         """Returns both support server invite and the bot invite hyperlink"""
 
@@ -250,7 +250,7 @@ class Meta(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['vote'])
-    @commands.cooldown(3, 5, commands.BucketType.user)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def upvote(self, ctx):
         """Support GuhBot? Upvote using this command!"""
 

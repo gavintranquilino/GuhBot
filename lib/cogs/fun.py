@@ -14,7 +14,7 @@ class Fun(commands.Cog):
         self.client = client
 
     @commands.command(aliases=['say', 'repeat'])
-    @commands.cooldown(3, 3, commands.BucketType.user)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     @commands.has_permissions(embed_links=True)
     async def echo(self, ctx, *, msg):
         """This command repeats what you say."""
@@ -45,7 +45,7 @@ class Fun(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['heads', 'tails', 'coin', 'cf'])
-    @commands.cooldown(3, 5, commands.BucketType.user)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def coinflip(self, ctx):
         """Coinflip simulation. Heads or Tails"""
 
@@ -61,10 +61,15 @@ class Fun(commands.Cog):
 
     @commands.command(aliases=['animalfact', 'animal_fact'])
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def animal(self, ctx, animal: str):
+    async def animal(self, ctx, animal: str=None):
         """Dog, Cat, Racoon, Whale, Bird, Panda, Kangaroo, Fox, and Koala facts."""
 
-        if (animal := animal.lower()) in ('dog', 'cat', 'bird', 'panda', 'fox', 'koala', 'kangaroo', 'racoon', 'whale'):
+        animal_list = ('dog', 'cat', 'bird', 'panda', 'fox', 'koala', 'kangaroo', 'racoon', 'whale')
+
+        if not animal:
+            animal = random.choice(animal_list)
+
+        if (animal := animal.lower()) in animal_list:
             fact_url = f"https://some-random-api.ml/facts/{animal.lower()}"
             img_url = f"https://some-random-api.ml/img/{'birb' if animal == 'bird' else animal}"
 
@@ -98,7 +103,7 @@ class Fun(commands.Cog):
             await ctx.send(f"Sorry {ctx.author.mention}, but I don\'t know any {animal} facts.")
 
     @commands.command(aliases=['dice', 'dice_roll'])
-    @commands.cooldown(3, 5, commands.BucketType.user)
+    @commands.cooldown(3, 8, commands.BucketType.user)
     async def roll(self, ctx, dice='d6'):
         """Roll different types of dice from D4 to D20."""
 
@@ -184,7 +189,7 @@ class Fun(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['penis', 'howbig', 'peepee', 'pickle', 'schlong', 'glizzy'], hidden=True)
-    @commands.cooldown(3, 5, commands.BucketType.user)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def pp(self, ctx, member: discord.Member=None):
         """Revolutionary peepee measurement system. 100% accuracy"""
 
@@ -207,7 +212,7 @@ class Fun(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    @commands.cooldown(3, 5, commands.BucketType.user)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def dab(self, ctx, member : discord.Member = None):
         """A member of your choice will do an epic dab. 2015 much?"""
 
@@ -232,7 +237,7 @@ class Fun(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    @commands.cooldown(3, 5, commands.BucketType.user)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def wink(self, ctx, member: discord.Member=None, *, reason='for no reason.'):
         """<Wink Gif Here>"""
 
@@ -258,7 +263,7 @@ class Fun(commands.Cog):
             await ctx.send(embed=embed)
 
     @commands.command()
-    @commands.cooldown(3, 5, commands.BucketType.user)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def pat(self, ctx, member: discord.Member=None, *, reason='for no reason.'):
         """Pat like you would a dog."""
 
@@ -284,7 +289,7 @@ class Fun(commands.Cog):
             await ctx.send(embed=embed)
 
     @commands.command()
-    @commands.cooldown(3, 5, commands.BucketType.user)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def hug(self, ctx, member: discord.Member=None, *, reason='for no reason.'):
         """XOXO without the Xs"""
 
@@ -310,7 +315,7 @@ class Fun(commands.Cog):
             await ctx.send(embed=embed)
 
     @commands.command(aliases=['face_palm', 'facepalms'])
-    @commands.cooldown(3, 5, commands.BucketType.user)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def facepalm(self, ctx, *, reason=' '):
         """For those frustrating moments"""
 
@@ -333,7 +338,7 @@ class Fun(commands.Cog):
             await ctx.send(embed=embed)
 
     @commands.command()
-    @commands.cooldown(3, 5, commands.BucketType.user)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def pikachu(self, ctx):
         """Random gifs and images of your electric, yellow friend"""
 
@@ -357,7 +362,7 @@ class Fun(commands.Cog):
             await ctx.send(embed=embed)
 
     @commands.command(aliases=['memes', 'joke', 'jokes', 'funny'])
-    @commands.cooldown(3, 5, commands.BucketType.user)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def meme(self, ctx):
         """Meme Generator \n( ͡° ͜ʖ ͡°)"""
 
@@ -384,7 +389,7 @@ class Fun(commands.Cog):
             await ctx.send(embed=embed)
 
     @commands.command(aliases=['chat', 'guhbot', 'reply', 'guhbot,', 'guh,'])
-    @commands.cooldown(3, 5, commands.BucketType.user)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def chatbot(self, ctx, *, message: str=None):
         """Have a simple conversation with GuhBot"""
 
@@ -398,7 +403,7 @@ class Fun(commands.Cog):
                 await ctx.send(reply)
 
     @commands.command(aliases=['emote'])
-    @commands.cooldown(3, 5, commands.BucketType.user)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def emoji(self, ctx, *, emoji: discord.Emoji):
         """Send animated server emojis"""
 
@@ -412,7 +417,7 @@ class Fun(commands.Cog):
             await ctx.send(f"{ctx.author.mention}, I can\'t use that emoji.")
 
     @commands.command()
-    @commands.cooldown(3, 5, commands.BucketType.user)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def enlarge(self, ctx, *, emoji: discord.Emoji):
         """Get a gif or image version of a custom emoji"""
 
