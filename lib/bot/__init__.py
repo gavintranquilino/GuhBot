@@ -156,7 +156,7 @@ class Bot(BotBase):
             if retry_after:
                 await message.channel.send(f"Slow Down {message.author.mention}! Please wait {round(retry_after, 3)} seconds.")
             else:
-                await message.channel.send(f"Hey {message.author.mention}! My prefix here is `{self.prefix(self, message)}`\nDo `{self.prefix(self, message)}help` get started.", delete_after=10)
+                await message.channel.send(f"Hey {message.author.mention}! My prefix here is `{self.prefix(self, message)}`\nDo `{self.prefix(self, message)}help` to get started.", delete_after=10)
 
         if str(message.author.id) in data and data[str(message.author.id)]['afk']['status']:
             embed = Embed(title='🟢 Cleared AFK Status',

@@ -182,7 +182,7 @@ class Misc(commands.Cog):
     @commands.command(aliases=['afkon', 'afk_on'])
     @commands.cooldown(2, 5, commands.BucketType.member)
     async def afk(self, ctx, *, reason: str='No reason'):
-        """Set your AFK status in the server"""
+        """Set your account to an AFK status"""
 
         author_id = str(ctx.author.id)
         path = getcwd()+'/lib/config/users.json'
