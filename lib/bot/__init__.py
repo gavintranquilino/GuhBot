@@ -27,11 +27,7 @@ def get_prefix(client, message):
     if not str(message.guild.id) in data:
         return when_mentioned_or('guh ')(client, message)
     else:
-        for element in data[str(message.guild.id)]:
-            for key in element:
-                if key == 'prefix':
-                    prefix = element[key]
-
+        prefix = data[str(message.guild.id)]['prefix']
         return when_mentioned_or(prefix)(client, message)
 
 def guild_prefix(client, message):
@@ -40,10 +36,7 @@ def guild_prefix(client, message):
     if not str(message.guild.id) in data:
         return 'guh '
     else:
-        for element in data[str(message.guild.id)]:
-            for key in element:
-                if key == 'prefix':
-                    prefix = element[key]
+        prefix = data[str(message.guild.id)]['prefix']
         return str(prefix)
 
 class Ready(object):
@@ -120,7 +113,7 @@ class Bot(BotBase):
         with open('./lib/bot/token.0', 'r', encoding='utf-8') as tf:
             self.TOKEN = tf.read()
 
-        print(f"Running your bot...")
+        print(f"Running your bot on version {self.version}...")
         super().run(self.TOKEN, reconnect=True)
 
     async def on_ready(self):

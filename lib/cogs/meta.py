@@ -133,21 +133,17 @@ class Meta(commands.Cog):
     @commands.command(aliases=['change_prefix'])
     @commands.cooldown(3, 10, commands.BucketType.guild)
     @commands.has_permissions(administrator=True)
-    async def prefix(self, ctx, *, new_prefix='guh '):
+    async def prefix(self, ctx, *, new_prefix: str='guh '):
         """Set a custom prefix for your server"""
 
         path = getcwd()+'/lib/config/guilds.json'
         with open(path, 'r') as file:
             data = load(file)
-        if not str(ctx.message.guild.id) in data:
-            data[str(ctx.message.guild.id)] = []
-            data[str(ctx.message.guild.id)].append({'prefix': new_prefix})
-        else:
-            data[str(ctx.message.guild.id)][0]['prefix'] = new_prefix
+        data[str(ctx.message.guild.id)] = {'prefix': new_prefix}
         with open(path, 'w') as file:
             dump(data, file, indent=4)
 
-        await ctx.send(f"Set the custom prefix to `{new_prefix}`\nDo `{new_prefix}prefix` to set it back to the default prefix.\nPing <@!624754986248831017> to check the current prefix.")
+        await ctx.send(f"Set the custom prefix to `{new_prefix}`\nDo `{new_prefix}prefix` to set it back to the default prefix.\nPing {self.client.user.mention} to check the current prefix.")
 
     @commands.command(aliases=['status', 'statistics', 'info'])
     @commands.cooldown(3, 5, commands.BucketType.user)
