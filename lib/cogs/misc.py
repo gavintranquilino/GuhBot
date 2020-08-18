@@ -1,8 +1,11 @@
 # 3rd party modules
 import discord
+from asyncio import sleep
 from discord.ext import commands
 
 # Builtin modules
+from os import getcwd
+from json import load, dump
 from aiohttp import request
 
 
@@ -16,7 +19,7 @@ class Misc(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def covid(self, ctx, *, country: str = None):
         """Daily COVID-19 summary"""
-    
+
         api_url = 'https://api.covid19api.com/summary'
         await ctx.send('🔎 **Fetching COVID-19 stats online...**')
         async with request('GET', api_url, headers={}) as response:
@@ -174,6 +177,31 @@ class Misc(commands.Cog):
         embed.set_thumbnail(url=member.avatar_url)
         embed.set_author(name=f"{member.name}#{member.discriminator}", icon_url=member.avatar_url)
         embed.set_footer(text=ctx.guild.name, icon_url=ctx.guild.icon_url)
+        await ctx.send(embed=embed)
+
+    @commands.command(aliases=['afkon', 'afk_on'])
+    @commands.cooldown(2, 5, commands.BucketType.member)
+    async def afk(self, ctx, *, reason: str='No reason'):
+        """Set your AFK status in the server"""
+
+        author_id = str(ctx.author.id)
+        path = getcwd()+'/lib/config/users.json'
+        with open(path, 'r') as file:
+            data = load(file)
+
+        if author_id not in data or not data[author_id]['afk']['status']:
+            embed = discord.Embed(title=f"🟡 Now AFK",
+                                  description=f"{ctx.author.mention} is now **AFK** for: **{reason}**",
+                                  colour=self.client.colours['YELLOW'],
+                                  timestamp=ctx.message.created_at)
+            embed.add_field(name='❓ How to remove an AFK status', value=f"If you wish to **remove** your **AFK status**, say something in one of the channels that {self.client.user.name} can see.\n\nYou can **clear** your **AFK status** in any server that {self.client.user.name} is in.")
+            embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
+                             icon_url=ctx.author.avatar_url)
+
+            data[author_id] = {'afk': {'status': True, 'mentions': 0, 'reason': reason, 'display_name': str(ctx.author.display_name)}}
+            with open(path, 'w') as file:
+                dump(data, file, indent=4)
+
         await ctx.send(embed=embed)
 
     @commands.Cog.listener()

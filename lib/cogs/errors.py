@@ -24,7 +24,7 @@ class Errors(commands.Cog):
                 embed = discord.Embed(
                                       title='🛑Stop!',
                                       description=f"Sorry {ctx.author.mention}, but you\'re on a cooldown.",
-                                      colour=discord.Colour.red(),
+                                      colour=self.client.colours['RED'],
                                       timestamp=ctx.message.created_at
                                       )
                 embed.set_thumbnail(url='https://media.giphy.com/media/3oz8xKaR836UJOYeOc/giphy.gif')
@@ -43,7 +43,7 @@ class Errors(commands.Cog):
             embed = discord.Embed(
                                   title='⛔Error!',
                                   description=f"Sorry {ctx.author.mention}, but {self.client.user.name} found an error.",
-                                  colour=discord.Colour.red(),
+                                  colour=self.client.colours['RED'],
                                   timestamp=ctx.message.created_at
                                   )
             embed.set_thumbnail(url='https://media.giphy.com/media/8L0Pky6C83SzkzU55a/giphy.gif')

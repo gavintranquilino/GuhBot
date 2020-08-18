@@ -1,5 +1,6 @@
 # 3rd party modules
 from asyncio import sleep
+from discord import Embed
 from discord.ext.commands import Bot as BotBase
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from discord.ext.commands import when_mentioned_or, CooldownMapping, BucketType
@@ -9,7 +10,6 @@ from glob import glob
 from pathlib import Path
 from os import getcwd, sep
 from json import load, dump
-from datetime import timezone
 from logging import basicConfig, INFO
 
 # Logging
@@ -78,6 +78,7 @@ class Bot(BotBase):
         self.cooldown = CooldownMapping.from_cooldown(1, 5, BucketType.user)
         self.colours = {'WHITE': 0xFFFFFF,
                         'AQUA': 0x1ABC9C,
+                        'YELLOW': 0xFFFF00,
                         'GREEN': 0x2ECC71,
                         'BLUE': 0x3498DB,
                         'PURPLE': 0x9B59B6,
@@ -146,6 +147,10 @@ class Bot(BotBase):
 
     async def on_message(self, message):
 
+        path = getcwd()+'/lib/config/users.json'
+        with open(path, 'r') as file:
+            data = load(file)
+
         if message.author.bot:
             pass
 
@@ -154,20 +159,44 @@ class Bot(BotBase):
         ):
 
             bucket = self.cooldown.get_bucket(message)
-            retry_after = bucket.update_rate_limit()   
+            retry_after = bucket.update_rate_limit()
             if retry_after:
                 await message.channel.send(f"Slow Down {message.author.mention}! Please wait {round(retry_after, 3)} seconds.")
             else:
                 await message.channel.send(f"Hey {message.author.mention}! My prefix here is `{self.prefix(self, message)}`\nDo `{self.prefix(self, message)}help` get started.", delete_after=10)
 
-            # if retry_after:
-            #     print(retry_after)
-            #     await message.channel.send(f"Slow Down {message.author.mention}!")
-            #     print('[+] slow down')
-            # else:
-            #     print(retry_after)
-            #     await message.channel.send(f"Hey {message.author.mention}! My prefix here is `{self.prefix(self, message)}`\nDo `{self.prefix(self, message)}help` get started.", delete_after=10)
+        if str(message.author.id) in data and data[str(message.author.id)]['afk']['status']:
+            embed = Embed(title='🟢 Cleared AFK Status',
+                          description=f"You have **automatically** been marked as **no longer AFK**, you had **{data[str(message.author.id)]['afk']['mentions']} mention(s)** while you were **AFK** for: **{data[str(message.author.id)]['afk']['reason']}**",
+                          colour=self.colours['GREEN'],
+                          timestamp=message.created_at)
+            embed.set_author(name=f"{message.author.name}#{message.author.discriminator}",
+                             icon_url=message.author.avatar_url)
 
+            await message.channel.send(embed=embed)
+            data[str(message.author.id)]['afk'] = {'status': False, 'mentions': 0, 'reason': 'No Reason', 'display_name': str(message.author.display_name)}
+            with open(path, 'w') as file:
+                dump(data, file, indent=4)
+
+        if message.mentions:
+            for user in message.mentions:
+                if not str(user.id) in data:
+                    pass
+                else:
+                    if data[str(user.id)]['afk']['status']:
+                        data[str(user.id)]['afk']['mentions'] += 1
+                        embed = Embed(name='🔴 AFK',
+                                      description=f"{user.mention} is currently set as **AFK** for: **{data[str(user.id)]['afk']['reason']}**",
+                                      colour=self.colours['RED'],
+                                      timestamp=message.created_at)
+                        embed.set_author(name=f"{user.name}#{user.discriminator}",
+                                         icon_url=user.avatar_url)
+                        await message.channel.send(embed=embed)
+                        with open(path, 'w') as file:
+                            dump(data, file, indent=4)
+
+                    else:
+                        pass
 
         await self.process_commands(message)
 

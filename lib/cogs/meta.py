@@ -73,7 +73,7 @@ class Meta(commands.Cog):
             if len(cog) > 1:
                 embed = discord.Embed(title='⛔Error!',
                                       description='That is way too many cogs!',
-                                      colour=discord.Colour.red(),
+                                      colour=self.client.colours['RED'],
                                       timestamp=ctx.message.created_at)
                 embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
                                  icon_url=ctx.author.avatar_url)
@@ -126,7 +126,7 @@ class Meta(commands.Cog):
                 except UnboundLocalError:
                     embed = discord.Embed(title='⛔Error!',
                                           description=f"How would you even use the command or module \"{cog[0]}\"?\nSorry, but I don\'t see a command or module called \"{cog[0]}\"",
-                                          colour=discord.Colour.red(),
+                                          colour=self.client.colours['RED'],
                                           timestamp=ctx.message.created_at)
                     await ctx.send(embed=embed)
 
