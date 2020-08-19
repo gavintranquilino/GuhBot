@@ -139,7 +139,13 @@ class Meta(commands.Cog):
         path = getcwd()+'/lib/config/guilds.json'
         with open(path, 'r') as file:
             data = load(file)
-        data[str(ctx.message.guild.id)] = {'prefix': new_prefix}
+
+        if new_prefix == 'guh ':
+            data.pop(str(ctx.message.guild.id), None)
+
+        else:
+            data[str(ctx.message.guild.id)] = {'prefix': new_prefix}
+
         with open(path, 'w') as file:
             dump(data, file, indent=4)
 
