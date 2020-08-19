@@ -166,8 +166,8 @@ class Bot(BotBase):
             embed.set_author(name=f"{message.author.name}#{message.author.discriminator}",
                              icon_url=message.author.avatar_url)
 
-            await message.channel.send(embed=embed)
-            data[str(message.author.id)]['afk'] = {'status': False, 'mentions': 0, 'reason': 'No Reason', 'display_name': str(message.author.display_name)}
+            await message.channel.send(embed=embed, delete_after=15)
+            data.pop(str(message.author.id), None)
             with open(path, 'w') as file:
                 dump(data, file, indent=4)
 
@@ -184,7 +184,7 @@ class Bot(BotBase):
                                       timestamp=message.created_at)
                         embed.set_author(name=f"{user.name}#{user.discriminator}",
                                          icon_url=user.avatar_url)
-                        await message.channel.send(embed=embed)
+                        await message.channel.send(embed=embed, delete_after=15)
                         with open(path, 'w') as file:
                             dump(data, file, indent=4)
 

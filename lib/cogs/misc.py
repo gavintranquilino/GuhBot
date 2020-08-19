@@ -198,7 +198,7 @@ class Misc(commands.Cog):
             embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
                              icon_url=ctx.author.avatar_url)
 
-            data[author_id] = {'afk': {'status': True, 'mentions': 0, 'reason': reason, 'display_name': str(ctx.author.display_name)}}
+            data[author_id] = {'afk': {'status': True, 'mentions': 0, 'reason': reason}}
             with open(path, 'w') as file:
                 dump(data, file, indent=4)
 
