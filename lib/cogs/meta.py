@@ -260,7 +260,7 @@ class Meta(commands.Cog):
     async def upvote(self, ctx):
         """Support GuhBot? Upvote using this command!"""
 
-        embed = discord.Embed(title='🔺Upvote GuhBot',
+        embed = discord.Embed(title='🔺 Upvote GuhBot',
                               description='Provided hyperlinks bring you to GuhBot\'s upvote links.\nUpvoting the bot gets us more users 😀',
                               colour=ctx.author.colour,
                               timestamp=ctx.message.created_at)

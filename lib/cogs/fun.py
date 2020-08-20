@@ -424,6 +424,19 @@ class Fun(commands.Cog):
         if emoji.is_usable:
             await ctx.send(emoji.url)
 
+    @commands.command(hidden=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def guh(self, ctx):
+        """Goo Goo"""
+
+        embed = discord.Embed(title='👶 GAH GAH',
+                              colour=ctx.author.colour,
+                              timestamp=ctx.message.created_at)
+        embed.set_image(url='https://media.giphy.com/media/14kqI3Y4urS3rG/giphy.gif')
+        embed.set_footer(text='GuhBoyooo')
+
+        await ctx.send(embed=embed)
+
     @commands.Cog.listener()
     async def on_ready(self):
         if not self.client.ready:
