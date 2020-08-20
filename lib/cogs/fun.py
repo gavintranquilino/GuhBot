@@ -15,7 +15,7 @@ class Fun(commands.Cog):
 
     @commands.command(aliases=['say', 'repeat'])
     @commands.cooldown(1, 3, commands.BucketType.user)
-    @commands.has_permissions(embed_links=True)
+    @commands.has_permissions(embed_links=True, manage_messages=True)
     async def echo(self, ctx, *, msg):
         """This command repeats what you say."""
 
