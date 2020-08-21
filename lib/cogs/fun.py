@@ -442,7 +442,13 @@ class Fun(commands.Cog):
     async def Da_vibin_Mexican_Green_Van_is_gay(self, ctx):
         """He truly is"""
 
-        await ctx.send(f"{ctx.author.mention}, I concur with your opinion.")
+        if ctx.author == self.client.get_user(353866653622337536):
+            answer = 'Congratulations, you played yourself.'
+
+        else:
+            answer = f"{ctx.author.mention}, I concur with your opinion."
+            
+        await ctx.send(answer)
 
     @commands.Cog.listener()
     async def on_ready(self):
