@@ -437,6 +437,13 @@ class Fun(commands.Cog):
 
         await ctx.send(embed=embed)
 
+    @commands.command(hidden=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def Da_vibin_Mexican_Green_Van_is_gay(self, ctx):
+        """He truly is"""
+
+        await ctx.send(f"{ctx.author.mention}, I concur with your opinion.")
+
     @commands.Cog.listener()
     async def on_ready(self):
         if not self.client.ready:
