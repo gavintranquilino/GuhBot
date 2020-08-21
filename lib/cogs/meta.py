@@ -140,16 +140,29 @@ class Meta(commands.Cog):
         with open(path, 'r') as file:
             data = load(file)
 
-        if new_prefix == 'guh ':
-            data.pop(str(ctx.message.guild.id), None)
+        if len(new_prefix) >= 10:
+            embed = discord.Embed(title='⛔ Error!',
+                                  description=f"Sorry {ctx.author.mention}, but {self.client.user.name} found an error.",
+                                  colour=self.client.colours['RED'],
+                                  timestamp=ctx.message.created_at)
+
+            embed.add_field(name='Too many characters!', value=f"{ctx.author.mention}, your custom prefix is equal to or has over 10 characters.")
+            embed.set_thumbnail(url='https://media.giphy.com/media/8L0Pky6C83SzkzU55a/giphy.gif')
+            embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
+                             icon_url=ctx.author.avatar_url)
+            await ctx.send(embed=embed)
 
         else:
-            data[str(ctx.message.guild.id)] = {'prefix': new_prefix}
+            if new_prefix == 'guh ':
+                data.pop(str(ctx.message.guild.id), None)
 
-        with open(path, 'w') as file:
-            dump(data, file, indent=4)
+            else:
+                data[str(ctx.message.guild.id)] = {'prefix': new_prefix}
 
-        await ctx.send(f"Set the custom prefix to `{new_prefix}`\nDo `{new_prefix}prefix` to set it back to the default prefix.\nPing {self.client.user.mention} to check the current prefix.")
+            with open(path, 'w') as file:
+                dump(data, file, indent=4)
+
+            await ctx.send(f"Set the custom prefix to `{new_prefix}`\nDo `{new_prefix}prefix` to set it back to the default prefix.\nPing {self.client.user.mention} to check the current prefix.")
 
     @commands.command(aliases=['status', 'statistics', 'info'])
     @commands.cooldown(2, 5, commands.BucketType.user)
