@@ -186,18 +186,19 @@ class Misc(commands.Cog):
     async def afk(self, ctx, *, reason: str='No reason'):
         """Set your account to an AFK status"""
 
+        char_limit = 150
         author_id = str(ctx.author.id)
         path = getcwd()+'/lib/config/users.json'
         with open(path, 'r') as file:
             data = load(file)
 
-        if len(reason) >= 150:
+        if len(reason) >= char_limit:
             embed = discord.Embed(title='⛔ Error!',
                                   description=f"Sorry {ctx.author.mention}, but {self.client.user.name} found an error.",
                                   colour=self.client.colours['RED'],
                                   timestamp=ctx.message.created_at)
 
-            embed.add_field(name='Too many characters!', value=f"{ctx.author.mention}, your AFK status is equal to or has over 50 characters.")
+            embed.add_field(name='Too many characters!', value=f"{ctx.author.mention}, your AFK status is equal to or has over {str(char_limit)} characters.")
             embed.set_thumbnail(url='https://media.giphy.com/media/8L0Pky6C83SzkzU55a/giphy.gif')
             embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
                              icon_url=ctx.author.avatar_url)
