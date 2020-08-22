@@ -1,6 +1,6 @@
 from lib.bot import client
 
-version = '1.0.7_15'  # Typo in AFK error
+version = '1.0.8'  # Akinator command
 # v[Release].[Major].[Minor]_[Patch]
 
 client.run(version)

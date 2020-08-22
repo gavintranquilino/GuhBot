@@ -1,6 +1,10 @@
 # 3rd party modules
 import discord
+import akinator
 from discord.ext import commands
+from typing import Union, Optional
+from asyncio import get_event_loop
+from akinator.async_aki import Akinator
 
 # Builtin modules
 import random
@@ -464,6 +468,117 @@ class Fun(commands.Cog):
             answer = f"{ctx.author.mention}, I concur with your opinion."
 
         await ctx.send(answer)
+
+    @commands.command(aliases=['aki'])
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def akinator(self, ctx, sfw: Optional[bool]=False, language: Optional[str]='english'):
+        """GuhBot will guess a character you think of"""
+
+        await ctx.trigger_typing()
+
+        aki = Akinator()
+        stopped = False
+
+        question = await aki.start_game(child_mode=sfw, language=language.lower())
+
+        while aki.progression <= 80:
+
+            await ctx.trigger_typing()
+
+            question_embed = discord.Embed(title=f"Question #{aki.step + 1}",
+                                  colour=ctx.author.colour,
+                                  timestamp=ctx.message.created_at)
+
+            question_embed.add_field(name=question,
+                            value='[yes (**y**) / no (**n**) / idk (**i**) / probably (**p**) / probably not (**pn**)]\n[back (**b**) / stop (**s**)]')
+
+            question_embed.set_thumbnail(url='https://cdn.discordapp.com/emojis/705081891190997073.gif')
+
+            question_embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
+                             icon_url=ctx.author.avatar_url)
+
+            question_embed.set_footer(text='GuhBot is not affiliated, authorized, or endorsed by Akinator.',
+                             icon_url='https://cdn.discordapp.com/avatars/356065937318871041/bcbfc8d951e3c75b6f453eec0f978a38.png')
+
+            await ctx.send(embed=question_embed)
+
+            def check(message):
+                return message.author == ctx.author and message.channel == ctx.message.channel
+
+            answer = await self.client.wait_for(event='message', check=check, timeout=30)
+            answer = answer.content
+
+            try:
+                if answer.lower() == 'back' or answer.lower() == 'b':
+                    try:
+                        question = await aki.back()
+
+                    except akinator.CantGoBackAnyFurther:
+                        await ctx.send(f"{ctx.author.mention}, you can\'t go back any further.", delete_after=10)
+
+                elif answer.lower() == 'stop' or answer.lower() == 's':
+                    stopped = True
+                    stop_embed = discord.Embed(title=f"Stopped Game",
+                                               description=f"{ctx.author.mention} has stopped the running Akinator game.",
+                                               colour=self.client.colours['RED'],
+                                               timestamp=ctx.message.created_at)
+                    stop_embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
+                                     icon_url=ctx.author.avatar_url)
+
+                    stop_embed.set_footer(text='GuhBot is not affiliated, authorized, or endorsed by Akinator.',
+                                     icon_url='https://cdn.discordapp.com/avatars/356065937318871041/bcbfc8d951e3c75b6f453eec0f978a38.png')
+
+                    await ctx.send(embed=stop_embed)
+
+                    break
+
+                else:
+                    await ctx.trigger_typing()
+
+                    question = await aki.answer(answer)
+
+            except akinator.InvalidAnswerError:
+                await ctx.send(f"{ctx.author.mention}, `{answer}` is an Invalid Answer.", delete_after=10)
+
+        if not stopped:
+            await aki.win()
+
+            win_embed = discord.Embed(title=f"{ctx.author.name}, Is this your character?",
+                                      colour=ctx.author.colour,
+                                      timestamp=ctx.message.created_at)
+            win_embed.add_field(name=aki.first_guess['name'],
+                                value=f"{aki.first_guess['description']}\nRanked #{aki.first_guess['ranking']}")
+
+            win_embed.add_field(name='\u200b',
+                                value=f"[yes (**y**) / no (**n**)]",
+                                inline=False)
+
+            win_embed.set_image(url=aki.first_guess['absolute_picture_path'])
+
+            win_embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
+                             icon_url=ctx.author.avatar_url)
+
+            win_embed.set_footer(text='GuhBot is not affiliated, authorized, or endorsed by Akinator.',
+                             icon_url='https://cdn.discordapp.com/avatars/356065937318871041/bcbfc8d951e3c75b6f453eec0f978a38.png')
+
+            await ctx.send(embed=win_embed)
+
+            correct = await self.client.wait_for(event='message', check=check, timeout=30)
+            correct = correct.content
+
+            if correct.lower() == "yes" or correct.lower() == "y":
+                embed = discord.Embed(title='Great! Guessed right one more time.',
+                                      description='I love this game!',
+                                      colour=ctx.author.colour,
+                                      timestamp=ctx.message.created_at)
+
+            else:
+                embed = discord.Embed(title='Aww you beat me!',
+                                      description='I\'ll get you next time!',
+                                      colour=ctx.author.colour,
+                                      timestamp=ctx.message.created_at)
+
+            await ctx.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_ready(self):
