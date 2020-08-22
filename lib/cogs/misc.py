@@ -191,7 +191,7 @@ class Misc(commands.Cog):
         with open(path, 'r') as file:
             data = load(file)
 
-        if len(reason) >= 50:
+        if len(reason) >= 150:
             embed = discord.Embed(title='⛔ Error!',
                                   description=f"Sorry {ctx.author.mention}, but {self.client.user.name} found an error.",
                                   colour=self.client.colours['RED'],
