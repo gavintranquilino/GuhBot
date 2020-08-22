@@ -73,7 +73,8 @@ class Fun(commands.Cog):
             fact_url = f"https://some-random-api.ml/facts/{animal.lower()}"
             img_url = f"https://some-random-api.ml/img/{'birb' if animal == 'bird' else animal}"
 
-            await ctx.send(f"🔎 **Searching for {animal} online...**")
+            await ctx.trigger_typing()
+
             async with request('GET', img_url, headers={}) as response:
                 if response.status == 200:
                     data = await response.json()
@@ -245,7 +246,9 @@ class Fun(commands.Cog):
             member =  self.client.user
 
         api_url = "https://some-random-api.ml/animu/wink"
-        await ctx.send('🔎 **Searching for gifs online...**')
+
+        await ctx.trigger_typing()
+
         async with request('GET', api_url, headers={}) as response:
             if response.status == 200:
                 data = await response.json()
@@ -271,7 +274,9 @@ class Fun(commands.Cog):
             member = self.client.user
 
         api_url = "https://some-random-api.ml/animu/pat"
-        await ctx.send('🔎 **Searching for gifs online...**')
+
+        await ctx.trigger_typing()
+
         async with request('GET', api_url, headers={}) as response:
             if response.status == 200:
                 data = await response.json()
@@ -297,7 +302,9 @@ class Fun(commands.Cog):
             member = self.client.user
 
         api_url = "https://some-random-api.ml/animu/hug"
-        await ctx.send('🔎 **Searching for gifs online...**')
+
+        await ctx.trigger_typing()
+
         async with request('GET', api_url, headers={}) as response:
             if response.status == 200:
                 data = await response.json()
@@ -320,7 +327,9 @@ class Fun(commands.Cog):
         """For those frustrating moments"""
 
         api_url = "https://some-random-api.ml/animu/face-palm"
-        await ctx.send('🔎 **Searching for gifs online...**')
+
+        await ctx.trigger_typing()
+
         async with request('GET', api_url, headers={}) as response:
             if response.status == 200:
                 data = await response.json()
@@ -343,7 +352,9 @@ class Fun(commands.Cog):
         """Random gifs and images of your electric, yellow friend"""
 
         api_url = "https://some-random-api.ml/img/pikachu"
-        await ctx.send('🔎 **Searching for Pikachu online...**')
+
+        await ctx.trigger_typing()
+
         async with request('GET', api_url, headers={}) as response:
             if response.status == 200:
                 data = await response.json()
@@ -367,7 +378,9 @@ class Fun(commands.Cog):
         """Meme Generator \n( ͡° ͜ʖ ͡°)"""
 
         api_url = 'https://meme-api.herokuapp.com/gimme'
-        await ctx.send('🔎 **Locating the funny...**')
+
+        await ctx.trigger_typing()
+
         async with request('GET', api_url, headers={}) as response:
             if response.status == 200:
                 data = await response.json()
@@ -394,7 +407,9 @@ class Fun(commands.Cog):
         """Have a simple conversation with GuhBot"""
 
         api_url = f"https://some-random-api.ml/chatbot/?message={message}"
-        await ctx.send('🧠 **Thinking of a response...**', delete_after=3)
+
+        await ctx.trigger_typing()
+
         async with request('GET', api_url, headers={}) as response:
             if response.status == 200:
                 data = await response.json()
@@ -447,7 +462,7 @@ class Fun(commands.Cog):
 
         else:
             answer = f"{ctx.author.mention}, I concur with your opinion."
-            
+
         await ctx.send(answer)
 
     @commands.Cog.listener()

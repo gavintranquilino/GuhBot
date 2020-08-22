@@ -18,10 +18,12 @@ class Misc(commands.Cog):
     @commands.command(aliases=['corona', 'coronavirus', 'covid19', 'covid-19'])
     @commands.cooldown(1, 8, commands.BucketType.user)
     async def covid(self, ctx, *, country: str = None):
-        """Daily COVID-19 summary"""
+        """COVID-19 summary and stats"""
 
         api_url = 'https://api.covid19api.com/summary'
-        await ctx.send('🔎 **Fetching COVID-19 stats online...**')
+
+        await ctx.trigger_typing()
+
         async with request('GET', api_url, headers={}) as response:
 
             if not country:
