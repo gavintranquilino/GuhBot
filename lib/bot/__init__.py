@@ -190,6 +190,17 @@ class Bot(BotBase):
 
         try:
             if not str(message.guild.id) in guild_data:
+                if message.content.startswith(f"<@!{self.user.id}>") and \
+                    len(message.content) == len(f"<@!{self.user.id}>"
+                ):
+
+                    bucket = self.cooldown.get_bucket(message)
+                    retry_after = bucket.update_rate_limit()
+                    if retry_after:
+                        await message.channel.send(f"Slow Down {message.author.mention}! Please wait {round(retry_after, 3)} seconds.")
+                    else:
+                        await message.channel.send(f"Hey {message.author.mention}! My prefix here is `{self.prefix(self, message)}`\nDo `{self.prefix(self, message)}help` to get started.", delete_after=10)
+
                 await self.process_commands(message)
 
             elif str(message.channel.id) in guild_data[str(message.guild.id)]['ignored']['channels'] and not message.content.startswith(f"{self.prefix(self, message)}enable"):
