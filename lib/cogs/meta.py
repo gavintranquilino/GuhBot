@@ -1,6 +1,7 @@
 # 3rd party modules
 import discord
 from discord.ext import commands
+from typing import Optional, Union
 from apscheduler.triggers.cron import CronTrigger
 from psutil import Process, virtual_memory, cpu_percent
 
@@ -153,16 +154,19 @@ class Meta(commands.Cog):
             await ctx.send(embed=embed)
 
         else:
-            if new_prefix == 'guh ':
-                data.pop(str(ctx.message.guild.id), None)
+            try:
+                if new_prefix == 'guh ':
+                    data[str(ctx.message.guild.id)].pop('prefix', None)
 
-            else:
+                else:
+                    data[str(ctx.message.guild.id)]['prefix'] = new_prefix
+
+            except KeyError:
                 data[str(ctx.message.guild.id)] = {'prefix': new_prefix}
 
+            await ctx.send(f"Set the custom prefix to `{new_prefix}`\nDo `{new_prefix}prefix` to set it back to the default prefix.\nPing {self.client.user.mention} to check the current prefix.")
             with open(path, 'w') as file:
                 dump(data, file, indent=4)
-
-            await ctx.send(f"Set the custom prefix to `{new_prefix}`\nDo `{new_prefix}prefix` to set it back to the default prefix.\nPing {self.client.user.mention} to check the current prefix.")
 
     @commands.command(aliases=['status', 'statistics', 'info'])
     @commands.cooldown(2, 5, commands.BucketType.user)
@@ -289,6 +293,85 @@ class Meta(commands.Cog):
         embed.set_thumbnail(url='https://media.giphy.com/media/4eQFLKTo1Tymc/giphy.gif')
         embed.set_footer(text='Thanks for upvoting GuhBot!👍')
         await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.cooldown(1, 5, commands.BucketType.guild)
+    @commands.has_permissions(administrator=True)
+    async def disable(self, ctx, channel: Optional[discord.TextChannel]):
+        """Keep GuhBot out of specific channels"""
+
+        path = getcwd()+'/lib/config/guilds.json'
+        with open(path, 'r') as file:
+            data = load(file)
+
+        if not channel:
+            channel = ctx.channel
+
+        embed = discord.Embed(title='❌ Channel Disabled',
+                              description=f"Disabled {self.client.user.name} commands for {channel.mention}.",
+                              colour=self.client.colours['RED'],
+                              timestamp=ctx.message.created_at)
+        embed.add_field(name='❓ How to re-enable a channel', value=f"If you wish to re-enable a channel so that {self.client.user.name}'s commands will register, do\n`{self.client.prefix(self.client, ctx.message)}enable <channel>`")
+        embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
+                         icon_url=ctx.author.avatar_url)
+
+        try:
+            if str(channel.id) in data[str(ctx.message.guild.id)]['ignored']['channels']:
+                await ctx.send(f"{ctx.author.mention}, {channel.mention} is already disabled", delete_after=15)
+
+            elif str(channel.id) not in data[str(ctx.message.guild.id)]['ignored']['channels']:
+                data[str(ctx.message.guild.id)]['ignored']['channels'].append(str(channel.id))
+                await channel.send(embed=embed)
+
+        except KeyError:
+            data[str(ctx.message.guild.id)] = {'ignored': {'channels': [str(channel.id)]}}
+            await channel.send(embed=embed)
+
+        with open(path, 'w') as file:
+            dump(data, file, indent=4)
+
+    @commands.command()
+    @commands.cooldown(1, 5, commands.BucketType.guild)
+    @commands.has_permissions(administrator=True)
+    async def enable(self, ctx, channel: Optional[discord.TextChannel]):
+        """Re-activate GuhBot in a specific channel"""
+
+        path = getcwd()+'/lib/config/guilds.json'
+        with open(path, 'r') as file:
+            data = load(file)
+
+        if not channel:
+            channel = ctx.channel
+
+        embed = discord.Embed(title='✅ Channel Enabled',
+                              description=f"Enabled {self.client.user.name} commands for {channel.mention}.",
+                              colour=self.client.colours['GREEN'],
+                              timestamp=ctx.message.created_at)
+        embed.add_field(name='❓ How to disable a channel', value=f"If you wish to disable a channel so that {self.client.user.name}'s commands won\'t register, do\n`{self.client.prefix(self.client, ctx.message)}disable <channel>`")
+        embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
+                         icon_url=ctx.author.avatar_url)
+
+        try:
+            if str(channel.id) in data[str(ctx.message.guild.id)]['ignored']['channels']:
+                for chnl in data[str(ctx.message.guild.id)]['ignored']['channels']:
+                    if chnl == str(channel.id):
+                        data[str(ctx.message.guild.id)]['ignored']['channels'].remove(str(channel.id))
+                        if not data[str(ctx.message.guild.id)]['ignored']['channels']:
+                            data[str(ctx.message.guild.id)]['ignored'].pop('channels', None)
+                            if not data[str(ctx.message.guild.id)]['ignored']:
+                                data[str(ctx.message.guild.id)].pop('ignored', None)
+                        await channel.send(embed=embed)
+
+            elif str(channel.id) not in data[str(ctx.message.guild.id)]['ignored']['channels']:
+                await ctx.send(f"{ctx.author.mention}, {channel.mention} is already enabled", delete_after=15)
+                if not data[str(ctx.message.guild.id)]['ignored']['channels']:
+                    data[str(ctx.message.guild.id)].pop('ignored', None)
+
+        except KeyError:
+            await ctx.send(f"{ctx.author.mention}, {channel.mention} is already disabled", delete_after=15)
+
+        with open(path, 'w') as file:
+            dump(data, file, indent=4)
 
     @commands.command(aliases=['close', 'disconnect'], hidden=True)
     @commands.is_owner()
