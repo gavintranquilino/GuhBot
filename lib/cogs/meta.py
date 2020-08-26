@@ -281,12 +281,13 @@ class Meta(commands.Cog):
                               description='Provided hyperlinks bring you to GuhBot\'s upvote links.\nUpvoting the bot gets us more users 😀',
                               colour=ctx.author.colour,
                               timestamp=ctx.message.created_at)
-        fields = [('Discord Bot List', '[discordbotlist.com](https://discordbotlist.com/bots/guhbot/upvote)', True),
+        fields = [('Top Discord Bots', '[top.gg](https://top.gg/bot/624754986248831017/vote)', True),
+                  ('Discord Bot List', '[discordbotlist.com](https://discordbotlist.com/bots/guhbot/upvote)', True),
                   ('Bots For Discord', '[botsfordiscord.com](https://botsfordiscord.com/bot/624754986248831017/vote)', True),
                   ('Top-Bots', '[top-bots.xyz](https://top-bots.xyz/bot/624754986248831017)', True),
                   ('Discord Boats', '[discord.boats](https://discord.boats/bot/624754986248831017/rate)', True),
-                  ('Discord Bots', '[discord.bots.gg](https://discord.bots.gg/bots/624754986248831017)', True),
-                  ("\u200b", "\u200b", True)]
+                  ('Discord Bots', '[discord.bots.gg](https://discord.bots.gg/bots/624754986248831017)', True)]
+                  # ("\u200b", "\u200b", True)]
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
         embed.set_author(name=self.client.user.name, icon_url=self.client.user.avatar_url)
