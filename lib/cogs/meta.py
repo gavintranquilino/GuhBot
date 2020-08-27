@@ -22,7 +22,7 @@ class Meta(commands.Cog):
         self.client = client
         self._message = 'watching @GuhBot | {guilds:,} servers & {users:,} users | version {version:s}'
 
-        client.scheduler.add_job(self.set, CronTrigger(second=0))
+        client.scheduler.add_job(self.set, CronTrigger(minute=20))
 
     @property
     def message(self):
