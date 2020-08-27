@@ -188,9 +188,6 @@ class Misc(commands.Cog):
 
         char_limit = 150
         author_id = str(ctx.author.id)
-        path = getcwd()+'/lib/config/users.json'
-        with open(path, 'r') as file:
-            data = load(file)
 
         if len(reason) >= char_limit:
             embed = discord.Embed(title='⛔ Error!',
@@ -203,7 +200,7 @@ class Misc(commands.Cog):
             embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
                              icon_url=ctx.author.avatar_url)
 
-        elif author_id not in data or not data[author_id]['afk']['status']:
+        elif author_id not in self.client.user_data or not self.client.user_data[author_id]['afk']['status']:
             embed = discord.Embed(title=f"🟡 Now AFK",
                                   description=f"{ctx.author.mention} is now **AFK** for: **{reason}**",
                                   colour=self.client.colours['YELLOW'],
@@ -212,9 +209,9 @@ class Misc(commands.Cog):
             embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
                              icon_url=ctx.author.avatar_url)
 
-            data[author_id] = {'afk': {'status': True, 'mentions': 0, 'reason': reason}}
-            with open(path, 'w') as file:
-                dump(data, file, indent=4)
+            self.client.user_data[author_id] = {'afk': {'status': True, 'mentions': 0, 'reason': reason}}
+            with open(self.client.user_path, 'w') as file:
+                dump(self.client.user_data, file, indent=4)
 
         await ctx.send(embed=embed)
 

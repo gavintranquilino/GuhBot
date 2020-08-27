@@ -21,31 +21,6 @@ basicConfig(level=INFO)
 # Locate all Cogs
 COGS = [path.split(sep)[-1][:-3] for path in glob('./lib/cogs/*.py')]
 
-def get_prefix(client, message):
-    with open(getcwd()+'/lib/config/guilds.json', 'r') as file:
-        data = load(file)
-
-    try:
-        if not 'prefix' in data[str(message.guild.id)]:
-            return when_mentioned_or('guh ')(client, message)
-        else:
-            prefix = data[str(message.guild.id)]['prefix']
-            return when_mentioned_or(prefix)(client, message)
-    except KeyError:
-        return when_mentioned_or('guh ')(client, message)
-
-def guild_prefix(client, message):
-    with open(getcwd()+'/lib/config/guilds.json', 'r') as file:
-        data = load(file)
-    try:
-        if not 'prefix' in data[str(message.guild.id)]:
-            return 'guh '
-        else:
-            prefix = data[str(message.guild.id)]['prefix']
-            return str(prefix)
-    except KeyError:
-        return 'guh '
-
 class Ready(object):
     """Cog console logging on startup"""
 
@@ -69,7 +44,42 @@ class Ready(object):
 class Bot(BotBase):
     """Bot subclass"""
 
+
+
     def __init__(self):
+
+        user_path = getcwd()+'/lib/config/users.json'
+        with open(user_path, 'r') as file:
+            user_data = load(file)
+
+        guild_path = getcwd()+'/lib/config/guilds.json'
+        with open(guild_path, 'r') as file:
+            guild_data = load(file)
+
+        def get_prefix(self, message):
+            try:
+                if not 'prefix' in self.guild_data[str(message.guild.id)]:
+                    return when_mentioned_or('guh ')(self, message)
+                else:
+                    prefix = self.guild_data[str(message.guild.id)]['prefix']
+                    return when_mentioned_or(prefix)(self, message)
+            except KeyError:
+                return when_mentioned_or('guh ')(self, message)
+
+        def guild_prefix(self, message):
+            try:
+                if not 'prefix' in self.guild_data[str(message.guild.id)]:
+                    return 'guh '
+                else:
+                    prefix = self.guild_data[str(message.guild.id)]['prefix']
+                    return str(prefix)
+            except KeyError:
+                return 'guh '
+
+        self.user_path = user_path
+        self.user_data = user_data
+        self.guild_path = guild_path
+        self.guild_data = guild_data
         self.prefix = guild_prefix
         self.ready = False
         self.support_url = 'https://discord.gg/PBmfvpU'
@@ -147,49 +157,41 @@ class Bot(BotBase):
 
     async def on_message(self, message):
 
-        user_path = getcwd()+'/lib/config/users.json'
-        with open(user_path, 'r') as file:
-            user_data = load(file)
-
-        guild_path = getcwd()+'/lib/config/guilds.json'
-        with open(guild_path, 'r') as file:
-            guild_data = load(file)
-
         if message.author.bot:
             pass
 
-        if str(message.author.id) in user_data and user_data[str(message.author.id)]['afk']['status']:
+        if str(message.author.id) in self.user_data and self.user_data[str(message.author.id)]['afk']['status']:
             embed = Embed(title='🟢 Cleared AFK Status',
-                          description=f"You have **automatically** been marked as **no longer AFK**, you had **{user_data[str(message.author.id)]['afk']['mentions']} mention(s)** while you were **AFK** for: **{user_data[str(message.author.id)]['afk']['reason']}**",
+                          description=f"You have **automatically** been marked as **no longer AFK**, you had **{self.user_data[str(message.author.id)]['afk']['mentions']} mention(s)** while you were **AFK** for: **{self.user_data[str(message.author.id)]['afk']['reason']}**",
                           colour=self.colours['GREEN'],
                           timestamp=message.created_at)
             embed.set_author(name=f"{message.author.name}#{message.author.discriminator}",
                              icon_url=message.author.avatar_url)
 
             await message.channel.send(embed=embed, delete_after=15)
-            user_data.pop(str(message.author.id), None)
-            with open(user_path, 'w') as file:
-                dump(user_data, file, indent=4)
+            self.user_data.pop(str(message.author.id), None)
+            with open(self.user_path, 'w') as file:
+                dump(self.user_data, file, indent=4)
 
         if message.mentions:
             for user in message.mentions:
-                if not str(user.id) in user_data:
+                if not str(user.id) in self.user_data:
                     pass
                 else:
-                    if user_data[str(user.id)]['afk']['status']:
-                        user_data[str(user.id)]['afk']['mentions'] += 1
+                    if self.user_data[str(user.id)]['afk']['status']:
+                        self.user_data[str(user.id)]['afk']['mentions'] += 1
                         embed = Embed(name='🔴 AFK',
-                                      description=f"{user.mention} is currently set as **AFK** for: **{user_data[str(user.id)]['afk']['reason']}**",
+                                      description=f"{user.mention} is currently set as **AFK** for: **{self.user_data[str(user.id)]['afk']['reason']}**",
                                       colour=self.colours['RED'],
                                       timestamp=message.created_at)
                         embed.set_author(name=f"{user.name}#{user.discriminator}",
                                          icon_url=user.avatar_url)
                         await message.channel.send(embed=embed, delete_after=15)
-                        with open(user_path, 'w') as file:
-                            dump(user_data, file, indent=4)
+                        with open(self.user_path, 'w') as file:
+                            dump(self.user_data, file, indent=4)
 
         try:
-            if not str(message.guild.id) in guild_data:
+            if not str(message.guild.id) in self.guild_data:
                 if message.content.startswith(f"<@!{self.user.id}>") and \
                     len(message.content) == len(f"<@!{self.user.id}>"
                 ):
@@ -203,7 +205,7 @@ class Bot(BotBase):
 
                 await self.process_commands(message)
 
-            elif str(message.channel.id) in guild_data[str(message.guild.id)]['ignored']['channels'] and not message.content.startswith(f"{self.prefix(self, message)}enable"):
+            elif str(message.channel.id) in self.guild_data[str(message.guild.id)]['ignored']['channels'] and not message.content.startswith(f"{self.prefix(self, message)}enable"):
                 if message.content.startswith(self.prefix(self, message)) and len(message.content) > len(self.prefix(self, message)) or message.content.startswith(f"<@!{self.user.id}>") and len(message.content) > len(f"<@!{self.user.id}>"):
                     await message.channel.send(f"{message.author.mention}, commands are disabled in this channel.", delete_after=15)
 

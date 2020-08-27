@@ -137,10 +137,6 @@ class Meta(commands.Cog):
     async def prefix(self, ctx, *, new_prefix: str='guh '):
         """Set a custom prefix for your server"""
 
-        path = getcwd()+'/lib/config/guilds.json'
-        with open(path, 'r') as file:
-            data = load(file)
-
         if len(new_prefix) >= 10:
             embed = discord.Embed(title='⛔ Error!',
                                   description=f"Sorry {ctx.author.mention}, but {self.client.user.name} found an error.",
@@ -156,17 +152,17 @@ class Meta(commands.Cog):
         else:
             try:
                 if new_prefix == 'guh ':
-                    data[str(ctx.message.guild.id)].pop('prefix', None)
+                    self.client.guild_data[str(ctx.message.guild.id)].pop('prefix', None)
 
                 else:
-                    data[str(ctx.message.guild.id)]['prefix'] = new_prefix
+                    self.client.guild_data[str(ctx.message.guild.id)]['prefix'] = new_prefix
 
             except KeyError:
-                data[str(ctx.message.guild.id)] = {'prefix': new_prefix}
+                self.client.guild_data[str(ctx.message.guild.id)] = {'prefix': new_prefix}
 
             await ctx.send(f"Set the custom prefix to `{new_prefix}`\nDo `{new_prefix}prefix` to set it back to the default prefix.\nPing {self.client.user.mention} to check the current prefix.")
-            with open(path, 'w') as file:
-                dump(data, file, indent=4)
+            with open(self.client.guild_path, 'w') as file:
+                dump(self.client.guild_data, file, indent=4)
 
     @commands.command(aliases=['status', 'statistics', 'info'])
     @commands.cooldown(2, 5, commands.BucketType.user)
@@ -301,10 +297,6 @@ class Meta(commands.Cog):
     async def disable(self, ctx, channel: Optional[discord.TextChannel]):
         """Keep GuhBot out of specific channels"""
 
-        path = getcwd()+'/lib/config/guilds.json'
-        with open(path, 'r') as file:
-            data = load(file)
-
         if not channel:
             channel = ctx.channel
 
@@ -317,29 +309,25 @@ class Meta(commands.Cog):
                          icon_url=ctx.author.avatar_url)
 
         try:
-            if str(channel.id) in data[str(ctx.message.guild.id)]['ignored']['channels']:
+            if str(channel.id) in self.client.guild_data[str(ctx.message.guild.id)]['ignored']['channels']:
                 await ctx.send(f"{ctx.author.mention}, {channel.mention} is already disabled", delete_after=15)
 
-            elif str(channel.id) not in data[str(ctx.message.guild.id)]['ignored']['channels']:
-                data[str(ctx.message.guild.id)]['ignored']['channels'].append(str(channel.id))
+            elif str(channel.id) not in self.client.guild_data[str(ctx.message.guild.id)]['ignored']['channels']:
+                self.client.guild_data[str(ctx.message.guild.id)]['ignored']['channels'].append(str(channel.id))
                 await channel.send(embed=embed)
 
         except KeyError:
-            data[str(ctx.message.guild.id)] = {'ignored': {'channels': [str(channel.id)]}}
+            self.client.guild_data[str(ctx.message.guild.id)] = {'ignored': {'channels': [str(channel.id)]}}
             await channel.send(embed=embed)
 
-        with open(path, 'w') as file:
-            dump(data, file, indent=4)
+        with open(self.client.guild_path, 'w') as file:
+            dump(self.client.guild_data, file, indent=4)
 
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.guild)
     @commands.has_permissions(administrator=True)
     async def enable(self, ctx, channel: Optional[discord.TextChannel]):
         """Re-activate GuhBot in a specific channel"""
-
-        path = getcwd()+'/lib/config/guilds.json'
-        with open(path, 'r') as file:
-            data = load(file)
 
         if not channel:
             channel = ctx.channel
@@ -353,26 +341,26 @@ class Meta(commands.Cog):
                          icon_url=ctx.author.avatar_url)
 
         try:
-            if str(channel.id) in data[str(ctx.message.guild.id)]['ignored']['channels']:
-                for chnl in data[str(ctx.message.guild.id)]['ignored']['channels']:
+            if str(channel.id) in self.client.guild_data[str(ctx.message.guild.id)]['ignored']['channels']:
+                for chnl in self.client.guild_data[str(ctx.message.guild.id)]['ignored']['channels']:
                     if chnl == str(channel.id):
-                        data[str(ctx.message.guild.id)]['ignored']['channels'].remove(str(channel.id))
-                        if not data[str(ctx.message.guild.id)]['ignored']['channels']:
-                            data[str(ctx.message.guild.id)]['ignored'].pop('channels', None)
-                            if not data[str(ctx.message.guild.id)]['ignored']:
-                                data[str(ctx.message.guild.id)].pop('ignored', None)
+                        self.client.guild_data[str(ctx.message.guild.id)]['ignored']['channels'].remove(str(channel.id))
+                        if not self.client.guild_data[str(ctx.message.guild.id)]['ignored']['channels']:
+                            self.client.guild_data[str(ctx.message.guild.id)]['ignored'].pop('channels', None)
+                            if not self.client.guild_data[str(ctx.message.guild.id)]['ignored']:
+                                self.client.guild_data[str(ctx.message.guild.id)].pop('ignored', None)
                         await channel.send(embed=embed)
 
-            elif str(channel.id) not in data[str(ctx.message.guild.id)]['ignored']['channels']:
+            elif str(channel.id) not in self.client.guild_data[str(ctx.message.guild.id)]['ignored']['channels']:
                 await ctx.send(f"{ctx.author.mention}, {channel.mention} is already enabled", delete_after=15)
-                if not data[str(ctx.message.guild.id)]['ignored']['channels']:
-                    data[str(ctx.message.guild.id)].pop('ignored', None)
+                if not self.client.guild_data[str(ctx.message.guild.id)]['ignored']['channels']:
+                    self.client.guild_data[str(ctx.message.guild.id)].pop('ignored', None)
 
         except KeyError:
             await ctx.send(f"{ctx.author.mention}, {channel.mention} is already disabled", delete_after=15)
 
-        with open(path, 'w') as file:
-            dump(data, file, indent=4)
+        with open(self.client.guild_path, 'w') as file:
+            dump(self.client.guild_data, file, indent=4)
 
     @commands.command(aliases=['close', 'disconnect'], hidden=True)
     @commands.is_owner()
