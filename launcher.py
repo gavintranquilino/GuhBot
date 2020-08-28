@@ -1,6 +1,6 @@
 from lib.bot import client
 
-version = '1.0.9_5'  # Status update every 5 mins
+version = '1.0.9_6'  # Status update every 1 min
 # v[Release].[Major].[Minor]_[Patch]
 
 client.run(version)
