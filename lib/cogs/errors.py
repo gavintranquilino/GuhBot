@@ -12,28 +12,24 @@ class Errors(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
-                # If the command is currently on cooldown trip this
-                m, s = divmod(error.retry_after, 60)
-                h, m = divmod(m, 60)
-                if int(h) is 0 and int(m) is 0:
-                    value = f"You must wait `{round(float(s), 2)} seconds` to use this command!"
-                elif int(h) is 0 and int(m) is not 0:
-                    value = f"You must wait `{int(m)} minutes and {int(s)} seconds` to use this command!"
+
+                bucket = self.client.cooldown.get_bucket(ctx.message)
+                retry_after = bucket.update_rate_limit()
+                if retry_after:
+                    pass
+
                 else:
-                    value = f"You must wait `{int(h)} hours, {int(m)} minutes and {int(s)} seconds` to use this command!"
-                embed = discord.Embed(
-                                      title='🛑Stop!',
-                                      description=f"Sorry {ctx.author.mention}, but you\'re on a cooldown.",
-                                      colour=self.client.colours['RED'],
-                                      timestamp=ctx.message.created_at
-                                      )
-                embed.set_thumbnail(url='https://media.giphy.com/media/3oz8xKaR836UJOYeOc/giphy.gif')
-                embed.set_author(
-                                 name=f"{ctx.author.name}#{ctx.author.discriminator}",
-                                 icon_url=ctx.author.avatar_url
-                                 )
-                embed.add_field(name='Slow Down!!!', value=value)
-                await ctx.send(embed=embed)
+                    # If the command is currently on cooldown trip this
+                    m, s = divmod(error.retry_after, 60)
+                    h, m = divmod(m, 60)
+                    if int(h) is 0 and int(m) is 0:
+                        value = f"You must wait `{round(float(s), 2)} seconds` to use this command!"
+                    elif int(h) is 0 and int(m) is not 0:
+                        value = f"You must wait `{int(m)} minutes and {int(s)} seconds` to use this command!"
+                    else:
+                        value = f"You must wait `{int(h)} hours, {int(m)} minutes and {int(s)} seconds` to use this command!"
+
+                    await ctx.send(f"Slow down {ctx.author.mention}! {value}")
 
 
         elif isinstance(error, commands.CommandNotFound):

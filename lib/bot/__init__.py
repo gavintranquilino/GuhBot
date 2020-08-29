@@ -199,7 +199,7 @@ class Bot(BotBase):
                     bucket = self.cooldown.get_bucket(message)
                     retry_after = bucket.update_rate_limit()
                     if retry_after:
-                        await message.channel.send(f"Slow Down {message.author.mention}! Please wait {round(retry_after, 3)} seconds.")
+                        pass
                     else:
                         await message.channel.send(f"Hey {message.author.mention}! My prefix here is `{self.prefix(self, message)}`\nDo `{self.prefix(self, message)}help` to get started.", delete_after=10)
 
@@ -207,7 +207,12 @@ class Bot(BotBase):
 
             elif str(message.channel.id) in self.guild_data[str(message.guild.id)]['ignored']['channels'] and not message.content.startswith(f"{self.prefix(self, message)}enable"):
                 if message.content.startswith(self.prefix(self, message)) and len(message.content) > len(self.prefix(self, message)) or message.content.startswith(f"<@!{self.user.id}>") and len(message.content) > len(f"<@!{self.user.id}>"):
-                    await message.channel.send(f"{message.author.mention}, commands are disabled in this channel.", delete_after=15)
+                    bucket = self.cooldown.get_bucket(message)
+                    retry_after = bucket.update_rate_limit()
+                    if retry_after:
+                        pass
+                    else:
+                        await message.channel.send(f"{message.author.mention}, commands are disabled in this channel.", delete_after=15)
 
             else:
                 if message.content.startswith(f"<@!{self.user.id}>") and \
@@ -217,7 +222,7 @@ class Bot(BotBase):
                     bucket = self.cooldown.get_bucket(message)
                     retry_after = bucket.update_rate_limit()
                     if retry_after:
-                        await message.channel.send(f"Slow Down {message.author.mention}! Please wait {round(retry_after, 3)} seconds.")
+                        pass
                     else:
                         await message.channel.send(f"Hey {message.author.mention}! My prefix here is `{self.prefix(self, message)}`\nDo `{self.prefix(self, message)}help` to get started.", delete_after=10)
 
@@ -231,7 +236,7 @@ class Bot(BotBase):
                 bucket = self.cooldown.get_bucket(message)
                 retry_after = bucket.update_rate_limit()
                 if retry_after:
-                    await message.channel.send(f"Slow Down {message.author.mention}! Please wait {round(retry_after, 3)} seconds.")
+                    pass
                 else:
                     await message.channel.send(f"Hey {message.author.mention}! My prefix here is `{self.prefix(self, message)}`\nDo `{self.prefix(self, message)}help` to get started.", delete_after=10)
 

@@ -182,7 +182,7 @@ class Misc(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['afkon', 'afk_on'])
-    @commands.cooldown(2, 5, commands.BucketType.member)
+    @commands.cooldown(1, 5, commands.BucketType.member)
     async def afk(self, ctx, *, reason: str='No reason'):
         """Set your account to an AFK status"""
 

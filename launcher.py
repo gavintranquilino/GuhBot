@@ -1,6 +1,6 @@
 from lib.bot import client
 
-version = '1.0.9_6'  # Status update every 1 min
-# v[Release].[Major].[Minor]_[Patch]
+version = '1.0.9.7'  # afk cooldown
+# v[Release].[Major].[Minor].[Patch]
 
 client.run(version)
