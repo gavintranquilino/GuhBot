@@ -1,7 +1,9 @@
 # 3rd party modules
 from asyncio import sleep
 from discord import Embed
+from aiosqlite import connect
 from discord.ext.commands import Bot as BotBase
+from apscheduler.triggers.cron import CronTrigger
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from discord.ext.commands import when_mentioned_or, CooldownMapping, BucketType
 
@@ -9,6 +11,7 @@ from discord.ext.commands import when_mentioned_or, CooldownMapping, BucketType
 from glob import glob
 from pathlib import Path
 from os import getcwd, sep
+from os.path import isfile
 from json import load, dump
 from logging import basicConfig, INFO
 
@@ -20,6 +23,10 @@ basicConfig(level=INFO)
 
 # Locate all Cogs
 COGS = [path.split(sep)[-1][:-3] for path in glob('./lib/cogs/*.py')]
+
+# DB files
+DB_PATH = "./data/db/database.db"
+BUILD_PATH = "./data/db/build.sql"
 
 class Ready(object):
     """Cog console logging on startup"""
@@ -43,8 +50,6 @@ class Ready(object):
 
 class Bot(BotBase):
     """Bot subclass"""
-
-
 
     def __init__(self):
 
@@ -133,7 +138,25 @@ class Bot(BotBase):
         print(f"Running your bot on version {self.version}...")
         super().run(self.TOKEN, reconnect=True)
 
+    async def connect_db(self):
+        """Connect to the database"""
+
+        self.db = await connect(DB_PATH)
+        self.conn = await connect(DB_PATH)
+
+        with open(BUILD_PATH, 'r', encoding='utf-8') as script:
+            cur = await self.conn.cursor()
+            await cur.executescript(script.read())
+
+        await self.conn.commit()
+
+    async def commit(self):
+        await self.conn.commit()
+
     async def on_ready(self):
+        await self.connect_db()
+        # Autosave Database
+        self.scheduler.add_job(self.commit(), CronTrigger(second=0))
         self.scheduler.start()
 
         if not self.ready:
@@ -145,6 +168,7 @@ class Bot(BotBase):
 
             meta = self.get_cog('Meta')
             await meta.set()
+
 
         else:
             print(f"Reconnecting...")
