@@ -53,7 +53,7 @@ class Meta(commands.Cog):
         """Displays this message"""
 
         if not cog:
-            embed = discord.Embed(title='🔧Modules List',
+            embed = discord.Embed(title='🔧 Module List',
                                   description=f"Do `{self.client.prefix(self.client, ctx.message)}help [module]` for more info on a specific module.",
                                   colour=ctx.author.colour,
                                   timestamp=ctx.message.created_at)
@@ -63,7 +63,7 @@ class Meta(commands.Cog):
                 if x.lower() == 'errors':
                     pass
                 else:
-                    cog_list.append((x, self.client.cogs[x].__doc__, True))
+                    cog_list.append((x, self.client.cogs[x].__doc__, False))
             for name, value, inline in cog_list:
                 embed.add_field(name=name, value=value, inline=inline)
             embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
@@ -72,7 +72,7 @@ class Meta(commands.Cog):
             await ctx.send(embed=embed)
         else:
             if len(cog) > 1:
-                embed = discord.Embed(title='⛔Error!',
+                embed = discord.Embed(title='⛔ Error!',
                                       description='That is way too many cogs!',
                                       colour=self.client.colours['RED'],
                                       timestamp=ctx.message.created_at)
@@ -85,14 +85,18 @@ class Meta(commands.Cog):
                 for x in self.client.cogs:
                     for y in cog:
                         if x.lower() == y.lower():
-                            embed = discord.Embed(title='🚧Commands List',
-                                                  description=f"List of GuhBot\'s Modular Commands.\nDo `{self.client.prefix(self.client, ctx.message)}help [command]` for more info on a command",
+                            embed = discord.Embed(title=f"🚧 {str(x).title()} Command List",
+                                                  description=f"**{str(x).title()} - {self.client.cogs[x].__doc__}**\nDo `{self.client.prefix(self.client, ctx.message)}help [command]` for more info on a command",
                                                   colour=ctx.author.colour,
                                                   timestamp=ctx.message.created_at)
+
                             command_list = []
                             for c in self.client.get_cog(y.capitalize()).get_commands():
                                 if not c.hidden:
-                                    command_list.append((f"{c.name}", f"{c.help}", True))
+                                    if c.signature:
+                                        command_list.append((f"`{c.qualified_name} {c.signature}`", f"{c.help}", False))
+                                    else:
+                                        command_list.append((f"`{c.qualified_name}`", f"{c.help}", False))
                             for name, value, inline in command_list:
                                 embed.add_field(name=name, value=value, inline=inline)
                             embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
@@ -103,7 +107,7 @@ class Meta(commands.Cog):
                     for x in self.client.cogs:
                         for c in self.client.get_cog(x).get_commands():
                             if c.name == cog[0].lower():
-                                embed = discord.Embed(title='🔧Command Syntax',
+                                embed = discord.Embed(title='🔧 Command Syntax',
                                                       description='GuhBot\'s commands and how to use them.',
                                                       colour=ctx.author.colour,
                                                       timestamp=ctx.message.created_at)
@@ -125,8 +129,8 @@ class Meta(commands.Cog):
                 try:
                     await ctx.send(embed=embed)
                 except UnboundLocalError:
-                    embed = discord.Embed(title='⛔Error!',
-                                          description=f"How would you even use the command or module \"{cog[0]}\"?\nSorry, but I don\'t see a command or module called \"{cog[0]}\"",
+                    embed = discord.Embed(title='⛔ Error!',
+                                          description=f"How would you even use the command or module \"**{cog[0]}**\"?\nSorry, but I don\'t see a command or module called \"**{cog[0]}**\"",
                                           colour=self.client.colours['RED'],
                                           timestamp=ctx.message.created_at)
                     await ctx.send(embed=embed)
