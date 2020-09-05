@@ -83,6 +83,8 @@ class Bot(BotBase):
         self.prefix = guild_prefix
         self.ready = False
         self.support_url = 'https://discord.gg/PBmfvpU'
+        self.official_url = 'https://guhbean.github.io/guhbot'
+        self.invite_url = 'https://discord.com/api/oauth2/authorize?client_id=624754986248831017&permissions=536210679&scope=bot'
         self.cogs_ready = Ready()
         self.scheduler = AsyncIOScheduler()
         self.cooldown = CooldownMapping.from_cooldown(1, 5, BucketType.user)

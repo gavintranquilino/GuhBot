@@ -208,7 +208,7 @@ class Meta(commands.Cog):
         commandLatency = round((end-start)*1000, 3)
         content += f"Command Latency: **{commandLatency}ms**"
 
-        embed = discord.Embed(title='Stats',
+        embed = discord.Embed(title=f"📊 Stats",
                               description=f"List of {botUsername}'s statistics",
                               colour=ctx.author.colour,
                               timestamp=ctx.message.created_at)
@@ -224,7 +224,9 @@ class Meta(commands.Cog):
                   ('💾 CPU Time', strfdelta(cpu_time, "{days} day(s)\n{hours} hour(s)\n{minutes} minute(s)\n{seconds} second(s)"), True),
                   ('⚙️ CPU Usage', cpu_usage, True),
                   ('💽 Memory Usage', f"{mem_usage:,.3f} / {mem_total:,.0f} MiB ({mem_of_total:.0f}%)", True),
-                  ('🙋 Support Server', f"Join {self.client.user.name} [Support Server]({self.client.support_url})", False)]
+                  ('🙋 Support Server', f"[Support Server]({self.client.support_url})", True),
+                  ('🤖 Bot Invite', f"[{self.client.user.name} Invite]({self.client.invite_url})", True),
+                  (f"🔗 {self.client.user.name} Website", f"[{self.client.user.name} Website]({self.client.official_url})", True)]
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
         embed.set_footer(text=f"GuhBean#8433 | {botUsername}")
@@ -263,10 +265,11 @@ class Meta(commands.Cog):
                               description='Use the hyperlinks below to get access to the GuhBot support server',
                               colour=ctx.author.colour,
                               timestamp=ctx.message.created_at)
-        embed.add_field(name='🙋 Support Server',
-                        value=f"[Support Server]({self.client.support_url})")
-        embed.add_field(name='🤖 Bot Invite',
-                        value='[GuhBot invite](https://discord.com/api/oauth2/authorize?client_id=624754986248831017&permissions=536210679&scope=bot)')
+        fields = [('🙋 Support Server', f"[Support Server]({self.client.support_url})", True),
+                  ('🤖 Bot Invite', f"[{self.client.user.name} Invite]({self.client.invite_url})", True),
+                  (f"🔗 {self.client.user.name} Website", f"[{self.client.user.name} Website]({self.client.official_url})", True)]
+        for name, value, inline in fields:
+            embed.add_field(name=name, value=value, inline=inline)
         embed.set_author(name=self.client.user.name, icon_url=self.client.user.avatar_url)
         embed.set_thumbnail(url='https://media.giphy.com/media/9ZOyRdXL7ZVKg/giphy.gif')
         embed.set_footer(text='GuhBean#8433 | GuhBot')
@@ -285,9 +288,10 @@ class Meta(commands.Cog):
                   ('Discord Bot List', '[discordbotlist.com](https://discordbotlist.com/bots/guhbot/upvote)', True),
                   ('Bots For Discord', '[botsfordiscord.com](https://botsfordiscord.com/bot/624754986248831017/vote)', True),
                   ('Top-Bots', '[top-bots.xyz](https://top-bots.xyz/bot/624754986248831017)', True),
-                  ('Discord Boats', '[discord.boats](https://discord.boats/bot/624754986248831017/rate)', True),
-                  ('Discord Bots', '[discord.bots.gg](https://discord.bots.gg/bots/624754986248831017)', True)]
-                  # ("\u200b", "\u200b", True)]
+                  ('Discord Boats (rate)', '[discord.boats](https://discord.boats/bot/624754986248831017/rate)', True),
+                  ('Discord Boats (vote)', '[discord.boats](https://discord.boats/bot/624754986248831017/vote)', True)]
+                  # ('\u200b', '\u200b', True)]
+
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
         embed.set_author(name=self.client.user.name, icon_url=self.client.user.avatar_url)

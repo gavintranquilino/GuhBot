@@ -148,6 +148,25 @@ class Roleplay(commands.Cog):
             embed.set_image(url=img)
             await ctx.send(embed=embed)
 
+    @commands.command(hidden=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def fart(self, ctx, user: Optional[discord.User]=None):
+        """Because h!fart sucks"""
+
+        if not user:
+            user = ctx.author
+
+        embed = discord.Embed(description=f"*smelled HaxBot\'s stinky fart*",
+                              colour=ctx.author.colour,
+                              timestamp=ctx.message.created_at)
+
+        embed.set_author(name=f"{user.name}#{user.discriminator}",
+                         icon_url=user.avatar_url)
+        embed.set_image(url="https://media.giphy.com/media/TYNhqiBl8U12w/giphy.gif")
+        embed.set_footer(text='😠 happy now?')
+
+        await ctx.send(embed=embed)
+
     @commands.Cog.listener()
     async def on_ready(self):
         if not self.client.ready:
