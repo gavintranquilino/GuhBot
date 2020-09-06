@@ -226,7 +226,9 @@ class Meta(commands.Cog):
                   ('💽 Memory Usage', f"{mem_usage:,.3f} / {mem_total:,.0f} MiB ({mem_of_total:.0f}%)", True),
                   ('🙋 Support Server', f"[Support Server]({self.client.support_url})", True),
                   ('🤖 Bot Invite', f"[{self.client.user.name} Invite]({self.client.invite_url})", True),
-                  (f"🔗 {self.client.user.name} Website", f"[{self.client.user.name} Website]({self.client.official_url})", True)]
+                  (f"🔗 {self.client.user.name} Website", f"[{self.client.user.name} Website]({self.client.official_url})", True),
+                  ('Command List', '***COMING SOON***', True)]
+        
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
         embed.set_footer(text=f"GuhBean#8433 | {botUsername}")

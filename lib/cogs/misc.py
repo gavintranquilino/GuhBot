@@ -2,6 +2,7 @@
 import discord
 from asyncio import sleep
 from discord.ext import commands
+from typing import Union, Optional
 
 # Builtin modules
 from os import getcwd
@@ -79,8 +80,8 @@ class Misc(commands.Cog):
             except UnboundLocalError:
                 await ctx.send(f"Sorry {ctx.author.mention}, I couldn\'t find COVID-19 stats for `{country}`")
 
-    @commands.command(aliases=['server_stats'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.command(aliases=['server_stats', 'server'])
+    @commands.cooldown(1, 8, commands.BucketType.user)
     async def server_info(self, ctx):
         """Get information on the current server"""
 
@@ -104,7 +105,7 @@ class Misc(commands.Cog):
                   ('💳 ID', ctx.guild.id, True),
                   ('👑 Owner', ctx.guild.owner, True),
                   ('🌎 Region', ctx.guild.region, True),
-                  ('🕑 Created At', ctx.guild.created_at.strftime('%d/%m/%Y %H:%M:%S'), True),
+                  ('🕑 Created At', ctx.guild.created_at.strftime('%a, %b %d, %Y, %I:%M %p'), True),
                   ('👥 Members', len(ctx.guild.members), True),
                   ('👤 Humans', len(list(filter(lambda m: not m.bot, ctx.guild.members))), True),
                   ('🤖 Bots', len(list(filter(lambda m: m.bot, ctx.guild.members))), True),
@@ -114,11 +115,40 @@ class Misc(commands.Cog):
                   ('🔊 Voice channels', len(ctx.guild.voice_channels), True),
                   ('🌀 Categories', len(ctx.guild.categories), True),
                   ('🏁 Roles', len(ctx.guild.roles), True),
+                  ('💎 Boosts', ctx.guild.premium_subscription_count, True),
                   bans]
 
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
 
+        await ctx.send(embed=embed)
+
+    @commands.command(aliases=['role_stats', 'role'])
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def role_info(self, ctx, role: Optional[discord.Role]):
+        """Learn more about a specific role"""
+
+        if not role:
+            role = ctx.author.top_role
+
+        def rgb_to_hex(rgb: tuple):
+            (r, g, b) = rgb
+            return '#{:02x}{:02x}{:02x}'.format(r, g, b)
+
+        embed = discord.Embed(title='Role Information',
+                              colour=role.colour,
+                              timestamp=ctx.message.created_at)
+
+        fields = [('📛 Name', role.name, True),
+                  ('💳 ID', role.id, True),
+                  ('🎨 Colour', rgb_to_hex(role.colour.to_rgb()), True),
+                  ('🕑 Created At', role.created_at.strftime('%a, %b %d, %Y, %I:%M %p'), True),
+                  ('👥 Members', f"{len(role.members)} member(s) with {role.mention}", True),
+                  ('🏆 Position', f"Role {role.position+1}/{len(ctx.guild.roles)}", True)]
+
+        for name, value, inline in fields:
+            embed.add_field(name=name, value=value, inline=inline)
+        embed.set_thumbnail(url=ctx.guild.icon_url)
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['av', 'pfp', 'profile', 'profile_pic', 'profile_picture'])
