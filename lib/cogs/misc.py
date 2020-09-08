@@ -125,7 +125,7 @@ class Misc(commands.Cog):
 
     @commands.command(aliases=['role_stats', 'role'])
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def role_info(self, ctx, role: Optional[discord.Role]):
+    async def role_info(self, ctx, *, role: Optional[discord.Role]):
         """Learn more about a specific role"""
 
         if not role:
