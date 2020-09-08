@@ -82,7 +82,7 @@ class Fun(commands.Cog):
         length = random.randint(0, 20)
         size = ''
         inches = 0
-        for x in range(length):
+        for _ in range(length):
             size += '='
             inches += 1
         if not member:
