@@ -59,8 +59,8 @@ class Errors(commands.Cog):
             except:
                 embed.add_field(name=f"Error in {ctx.command}", value=f"{error}")
             await ctx.send(embed=embed)
-        raise error
         print(f"{error}")
+        raise error
 
     @commands.Cog.listener()
     async def on_ready(self):
