@@ -36,7 +36,7 @@ async def get_prefix(client, message):
         if not prefix:
             return when_mentioned_or('guh ')(client, message)
         else:
-            return when_mentioned_or(prefix)(client, message)
+            return when_mentioned_or(prefix[0])(client, message)
 
 async def guild_prefix(message):
     async with connect(DB_PATH) as db:
@@ -46,7 +46,7 @@ async def guild_prefix(message):
         if not prefix:
             return 'guh '
         else:
-            return prefix
+            return prefix[0]
 
 class Ready(object):
     """Cog console logging on startup"""
@@ -108,6 +108,8 @@ class Bot(BotBase):
         # self.prefix = guild_prefix
 
         self.prefix = guild_prefix
+        self.BUILD_PATH = BUILD_PATH
+        self.DB_PATH = DB_PATH
         self.ready = False
         self.support_url = 'https://discord.gg/PBmfvpU'
         self.cogs_ready = Ready()
@@ -195,7 +197,7 @@ class Bot(BotBase):
         if message.author.bot:
             pass
 
-        # if str(message.author.id) in self.user_data and self.user_data[str(message.author.id)]['afk']['status']:
+        # elif str(message.author.id) in self.user_data and self.user_data[str(message.author.id)]['afk']['status']:
         #     embed = Embed(title='🟢 Cleared AFK Status',
         #                   description=f"You have **automatically** been marked as **no longer AFK**, you had **{self.user_data[str(message.author.id)]['afk']['mentions']} mention(s)** while you were **AFK** for: **{self.user_data[str(message.author.id)]['afk']['reason']}**",
         #                   colour=self.colours['GREEN'],

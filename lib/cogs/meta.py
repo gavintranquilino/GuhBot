@@ -1,5 +1,6 @@
 # 3rd party modules
 import discord
+from aiosqlite import connect
 from discord.ext import commands
 from typing import Optional, Union
 from apscheduler.triggers.cron import CronTrigger
@@ -134,7 +135,7 @@ class Meta(commands.Cog):
     @commands.command(aliases=['change_prefix'])
     @commands.cooldown(2, 10, commands.BucketType.guild)
     @commands.has_permissions(administrator=True)
-    async def prefix(self, ctx, *, new_prefix: str='guh '):
+    async def prefix(self, ctx, *, new_prefix: Optional[str]='guh '):
         """Set a custom prefix for your server"""
 
         if len(new_prefix) >= 10:
@@ -150,19 +151,20 @@ class Meta(commands.Cog):
             await ctx.send(embed=embed)
 
         else:
-            try:
-                if new_prefix == 'guh ':
-                    self.client.guild_data[str(ctx.message.guild.id)].pop('prefix', None)
-
-                else:
-                    self.client.guild_data[str(ctx.message.guild.id)]['prefix'] = new_prefix
-
-            except KeyError:
-                self.client.guild_data[str(ctx.message.guild.id)] = {'prefix': new_prefix}
+            async with connect(self.client.DB_PATH) as db:
+                cur = await db.cursor()
+                await cur.execute('SELECT prefix FROM guilds WHERE guild_id = ?', (ctx.guild.id,))
+                prefix = await cur.fetchone()
+                if not prefix:
+                    await cur.execute('INSERT INTO guilds (guild_id, prefix) VALUES (?, ?)', (ctx.guild.id, new_prefix))
+                else:   
+                    await cur.execute('UPDATE guilds SET prefix = ? WHERE guild_id = ?', (new_prefix, ctx.guild.id))
+               
+                await db.commit()
+                await cur.close()
+                await db.close()
 
             await ctx.send(f"Set the custom prefix to `{new_prefix}`\nDo `{new_prefix}prefix` to set it back to the default prefix.\nPing {self.client.user.mention} to check the current prefix.")
-            with open(self.client.guild_path, 'w') as file:
-                dump(self.client.guild_data, file, indent=4)
 
     @commands.command(aliases=['status', 'statistics', 'info'])
     @commands.cooldown(2, 5, commands.BucketType.user)
