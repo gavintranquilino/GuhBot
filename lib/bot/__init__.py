@@ -31,7 +31,7 @@ BUILD_PATH = "./data/db/build.sql"
 async def get_prefix(client, message):
     async with connect(DB_PATH) as db:
         cur = await db.cursor()
-        await cur.execute('SELECT prefix FROM guilds WHERE guild_id = ?', (message.guild.id,))
+        await cur.execute('SELECT prefix FROM prefixes WHERE id = ?', (message.guild.id,))
         prefix = await cur.fetchone()
         if not prefix:
             return when_mentioned_or('guh ')(client, message)
@@ -41,7 +41,7 @@ async def get_prefix(client, message):
 async def guild_prefix(message):
     async with connect(DB_PATH) as db:
         cur = await db.cursor()
-        await cur.execute('SELECT prefix FROM guilds WHERE guild_id = ?', (message.guild.id,))
+        await cur.execute('SELECT prefix FROM prefixes WHERE id = ?', (message.guild.id,))
         prefix = await cur.fetchone()
         if not prefix:
             return 'guh '
@@ -72,40 +72,6 @@ class Bot(BotBase):
     """Bot subclass"""
 
     def __init__(self):
-
-        # user_path = getcwd()+'/lib/config/users.json'
-        # with open(user_path, 'r') as file:
-        #     user_data = load(file)
-
-        # guild_path = getcwd()+'/lib/config/guilds.json'
-        # with open(guild_path, 'r') as file:
-        #     guild_data = load(file)
-
-        # def get_prefix(self, message):
-        #     try:
-        #         if not 'prefix' in self.guild_data[str(message.guild.id)]:
-        #             return when_mentioned_or('guh ')(self, message)
-        #         else:
-        #             prefix = self.guild_data[str(message.guild.id)]['prefix']
-        #             return when_mentioned_or(prefix)(self, message)
-        #     except KeyError:
-        #         return when_mentioned_or('guh ')(self, message)
-
-        # def guild_prefix(self, message):
-        #     try:
-        #         if not 'prefix' in self.guild_data[str(message.guild.id)]:
-        #             return 'guh '
-        #         else:
-        #             prefix = self.guild_data[str(message.guild.id)]['prefix']
-        #             return str(prefix)
-        #     except KeyError:
-        #         return 'guh '    
-
-        # self.user_path = user_path
-        # self.user_data = user_data
-        # self.guild_path = guild_path
-        # self.guild_data = guild_data
-        # self.prefix = guild_prefix
 
         self.prefix = guild_prefix
         self.BUILD_PATH = BUILD_PATH
@@ -163,12 +129,12 @@ class Bot(BotBase):
         super().run(self.TOKEN, reconnect=True)
 
     async def on_ready(self):
-        # """Build DB"""
-
-        # async with connect(DB_PATH) as db:
-        #     with open(BUILD_PATH, 'r', encoding='utf-8') as script:
-        #         cur = await db.cursor()
-        #         await cur.execute(script.read())
+        # Build DB
+        async with connect(DB_PATH) as db:
+            with open(BUILD_PATH, 'r', encoding='utf-8') as script:
+                cur = await db.cursor()
+                await cur.executescript(script.read())
+                await db.commit()
 
         self.scheduler.start()
 
@@ -194,63 +160,68 @@ class Bot(BotBase):
 
     async def on_message(self, message):
 
-        if message.author.bot:
-            pass
+        if not message.author.bot:
+            async with connect(DB_PATH) as db:
+                cur0 = await db.cursor() 
+                await cur0.execute('SELECT * FROM afk WHERE id = ?', (message.author.id,)) # Select row with author id
+                author_afk = await cur0.fetchone()
+               
+                if author_afk: # Check if row exists
+                    await cur0.execute('DELETE FROM afk WHERE id = ?', (message.author.id,)) # Delete row
+                    
+                    embed = Embed(title='🟢 Cleared AFK Status',
+                    description=f"You have **automatically** been marked as **no longer AFK**, you had **{author_afk[1]} mention(s)** while you were **AFK** for: **{author_afk[2]}**",
+                    colour=self.colours['GREEN'],
+                    timestamp=message.created_at)
+                    embed.set_author(name=f"{message.author.name}#{message.author.discriminator}",
+                                        icon_url=message.author.avatar_url)
+                    
+                    await message.channel.send(embed=embed, delete_after=15)
+                    
+                if message.mentions: # If the message has any mentions
+                    for user in message.mentions: # Get all users from mention list
+                        if not user.bot: 
+                            cur1 = await db.cursor()
+                            await cur1.execute('SELECT * FROM afk WHERE id = ?', (user.id,)) # Select row with user id
+                            user_afk = await cur1.fetchone()
+                            if user_afk:
+                                new_counter = int(user_afk[1]) + 1
+                                await cur1.execute('UPDATE afk SET mentions = ? WHERE id = ?', (new_counter, user.id)) # Add to mention counter
+                                    
+                                embed = Embed(name='🔴 AFK',
+                                                description=f"{user.mention} is currently set as **AFK** for: **{user_afk[2]}**",
+                                                colour=self.colours['RED'],
+                                                timestamp=message.created_at)
+                                embed.set_author(name=f"{user.name}#{user.discriminator}",
+                                                    icon_url=user.avatar_url)
+                                await message.channel.send(embed=embed, delete_after=15)
 
-        # elif str(message.author.id) in self.user_data and self.user_data[str(message.author.id)]['afk']['status']:
-        #     embed = Embed(title='🟢 Cleared AFK Status',
-        #                   description=f"You have **automatically** been marked as **no longer AFK**, you had **{self.user_data[str(message.author.id)]['afk']['mentions']} mention(s)** while you were **AFK** for: **{self.user_data[str(message.author.id)]['afk']['reason']}**",
-        #                   colour=self.colours['GREEN'],
-        #                   timestamp=message.created_at)
-        #     embed.set_author(name=f"{message.author.name}#{message.author.discriminator}",
-        #                      icon_url=message.author.avatar_url)
+                await db.commit()    
 
-        #     await message.channel.send(embed=embed, delete_after=15)
-        #     self.user_data.pop(str(message.author.id), None)
-        #     with open(self.user_path, 'w') as file:
-        #         dump(self.user_data, file, indent=4)
+            if message.content.startswith(f"<@!{self.user.id}>") and \
+                len(message.content) == len(f"<@!{self.user.id}>"
+            ):
 
-        # if message.mentions:
-        #     for user in message.mentions:
-        #         if not str(user.id) in self.user_data:
-        #             pass
-        #         else:
-        #             if self.user_data[str(user.id)]['afk']['status']:
-        #                 self.user_data[str(user.id)]['afk']['mentions'] += 1
-        #                 embed = Embed(name='🔴 AFK',
-        #                               description=f"{user.mention} is currently set as **AFK** for: **{self.user_data[str(user.id)]['afk']['reason']}**",
-        #                               colour=self.colours['RED'],
-        #                               timestamp=message.created_at)
-        #                 embed.set_author(name=f"{user.name}#{user.discriminator}",
-        #                                  icon_url=user.avatar_url)
-        #                 await message.channel.send(embed=embed, delete_after=15)
-        #                 with open(self.user_path, 'w') as file:
-        #                     dump(self.user_data, file, indent=4)
+                bucket = self.cooldown.get_bucket(message)
+                retry_after = bucket.update_rate_limit()
+                if retry_after:
+                    await message.channel.send(f"Slow Down {message.author.mention}! Please wait {round(retry_after, 3)} seconds.")
+                else:
+                    await message.channel.send(f"Hey {message.author.mention}! My prefix here is `{await self.prefix(message)}`\nDo `{await self.prefix(message)}help` to get started.", delete_after=10)
 
-        if message.content.startswith(f"<@!{self.user.id}>") and \
-            len(message.content) == len(f"<@!{self.user.id}>"
-        ):
-
-            bucket = self.cooldown.get_bucket(message)
-            retry_after = bucket.update_rate_limit()
-            if retry_after:
-                await message.channel.send(f"Slow Down {message.author.mention}! Please wait {round(retry_after, 3)} seconds.")
-            else:
-                await message.channel.send(f"Hey {message.author.mention}! My prefix here is `{await self.prefix(message)}`\nDo `{await self.prefix(message)}help` to get started.", delete_after=10)
-
-        await self.process_commands(message)
+            await self.process_commands(message)
 
     async def on_guild_remove(self, guild):
         print(f"Removed from server {guild.name}: {guild.id}")
 
-        # --When you need to delete json prefixes for servers you aren't in--
-        # from json import dump
-        # with open(getcwd()+'/lib/config/prefixes.json', 'r') as file:
-        #     data = load(file)
-        #
-        # data.pop(str(guild.id))
-        #
-        # with open(getcwd()+'/lib/config/prefixes.json', 'w') as file:
-        #     dump(data, file, indent=4)
+        async with connect(self.DB_PATH) as db:
+            cur = await db.cursor()
+            await cur.execute('SELECT prefix FROM prefixes WHERE id = ?', (guild.id,))
+            prefix = await cur.fetchone()
+
+            if prefix:
+                await cur.execute('DELETE FROM prefixes WHERE id = ?', (guild.id,))
+
+            await db.commit()
 
 client = Bot()

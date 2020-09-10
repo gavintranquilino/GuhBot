@@ -1,6 +1,7 @@
 # 3rd party modules
 import discord
 from asyncio import sleep
+from aiosqlite import connect
 from discord.ext import commands
 
 # Builtin modules
@@ -183,11 +184,10 @@ class Misc(commands.Cog):
 
     @commands.command(aliases=['afkon', 'afk_on'])
     @commands.cooldown(2, 5, commands.BucketType.member)
-    async def afk(self, ctx, *, reason: str='No reason'):
+    async def afk(self, ctx, *, reason: str='No Reason'):
         """Set your account to an AFK status"""
 
         char_limit = 150
-        author_id = str(ctx.author.id)
 
         if len(reason) >= char_limit:
             embed = discord.Embed(title='⛔ Error!',
@@ -200,7 +200,19 @@ class Misc(commands.Cog):
             embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
                              icon_url=ctx.author.avatar_url)
 
-        elif author_id not in self.client.user_data or not self.client.user_data[author_id]['afk']['status']:
+        else:
+            async with connect(self.client.DB_PATH) as db:
+                cur = await db.cursor()
+                # Select row with author id
+                await cur.execute('SELECT * FROM afk WHERE id = ?', (ctx.author.id,))
+                author_afk = await cur.fetchone()
+
+                if not author_afk:  # Check if row doesn't exist
+                    # Insert into row
+                    await cur.execute('INSERT INTO afk (id, reason) VALUES (?, ?)', (ctx.author.id, reason))
+
+                await db.commit()
+
             embed = discord.Embed(title=f"🟡 Now AFK",
                                   description=f"{ctx.author.mention} is now **AFK** for: **{reason}**",
                                   colour=self.client.colours['YELLOW'],
@@ -208,10 +220,6 @@ class Misc(commands.Cog):
             embed.add_field(name='❓ How to remove an AFK status', value=f"If you wish to **remove** your **AFK status**, say something in one of the channels that {self.client.user.name} can see.\n\nYou can **clear** your **AFK status** in any server that {self.client.user.name} is in.")
             embed.set_author(name=f"{ctx.author.name}#{ctx.author.discriminator}",
                              icon_url=ctx.author.avatar_url)
-
-            self.client.user_data[author_id] = {'afk': {'status': True, 'mentions': 0, 'reason': reason}}
-            with open(self.client.user_path, 'w') as file:
-                dump(self.client.user_data, file, indent=4)
 
         await ctx.send(embed=embed)
 

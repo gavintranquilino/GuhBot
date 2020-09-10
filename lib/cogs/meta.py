@@ -153,16 +153,20 @@ class Meta(commands.Cog):
         else:
             async with connect(self.client.DB_PATH) as db:
                 cur = await db.cursor()
-                await cur.execute('SELECT prefix FROM guilds WHERE guild_id = ?', (ctx.guild.id,))
+                await cur.execute('SELECT prefix FROM prefixes WHERE id = ?', (ctx.guild.id,))
                 prefix = await cur.fetchone()
+
                 if not prefix:
-                    await cur.execute('INSERT INTO guilds (guild_id, prefix) VALUES (?, ?)', (ctx.guild.id, new_prefix))
-                else:   
-                    await cur.execute('UPDATE guilds SET prefix = ? WHERE guild_id = ?', (new_prefix, ctx.guild.id))
+                    if not new_prefix == 'guh ':
+                        await cur.execute('INSERT INTO prefixes (id, prefix) VALUES (?, ?)', (ctx.guild.id, new_prefix))
+ 
+                else:
+                    if new_prefix =='guh ':
+                        await cur.execute('DELETE FROM prefixes WHERE id = ?', (ctx.guild.id,))
+                    else:  
+                        await cur.execute('UPDATE prefixes SET prefix = ? WHERE id = ?', (new_prefix, ctx.guild.id))
                
                 await db.commit()
-                await cur.close()
-                await db.close()
 
             await ctx.send(f"Set the custom prefix to `{new_prefix}`\nDo `{new_prefix}prefix` to set it back to the default prefix.\nPing {self.client.user.mention} to check the current prefix.")
 
