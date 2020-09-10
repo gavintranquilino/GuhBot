@@ -129,6 +129,8 @@ class Bot(BotBase):
         super().run(self.TOKEN, reconnect=True)
 
     async def on_ready(self):
+        status_channel = self.get_channel(735332260559061042)
+        await status_channel.send(':wave: Back up and running!')
         # Build DB
         async with connect(DB_PATH) as db:
             with open(BUILD_PATH, 'r', encoding='utf-8') as script:
@@ -150,6 +152,8 @@ class Bot(BotBase):
 
         else:
             print(f"Reconnecting...")
+            status_channel = self.get_channel(735332260559061042)
+            await status_channel.send('Hold on I think I\'m reconnecting :flushed:')
 
     async def on_connect(self):
         print('Connected')

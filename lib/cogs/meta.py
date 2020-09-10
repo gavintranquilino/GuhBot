@@ -309,11 +309,13 @@ class Meta(commands.Cog):
 
     @commands.command(aliases=['close', 'disconnect'], hidden=True)
     @commands.is_owner()
-    async def logout(self, ctx):
+    async def logout(self, ctx, *, reason: Optional[str]='No Reason'):
         """This command disconnects the bot from all services."""
 
         await ctx.send(f":wave: Goodbye {ctx.author.mention}! I'm shutting dow...")
-        await self.client.logout()
+        status_channel = self.client.get_channel(735332260559061042)
+        await status_channel.send(f"{ctx.author.mention} is logging me out for: **{reason}**\n:wave: Goodbye everyone! I\'m shutting dow...")
+        await self.client.close()
         print(f"{self.client.user.name} was logged out.")
 
     @logout.error
