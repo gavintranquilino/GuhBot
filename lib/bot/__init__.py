@@ -1,6 +1,7 @@
 # 3rd party modules
 from asyncio import sleep
 from discord import Embed
+from aiosqlite import connect
 from discord.ext.commands import Bot as BotBase
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from discord.ext.commands import when_mentioned_or, CooldownMapping, BucketType
@@ -20,6 +21,10 @@ basicConfig(level=INFO)
 
 # Locate all Cogs
 COGS = [path.split(sep)[-1][:-3] for path in glob('./lib/cogs/*.py')]
+
+# DB files
+DB_PATH = "./data/db/database.db"
+BUILD_PATH = "./data/db/build.sql"
 
 class Ready(object):
     """Cog console logging on startup"""
@@ -43,8 +48,6 @@ class Ready(object):
 
 class Bot(BotBase):
     """Bot subclass"""
-
-
 
     def __init__(self):
 
@@ -81,6 +84,8 @@ class Bot(BotBase):
         self.guild_path = guild_path
         self.guild_data = guild_data
         self.prefix = guild_prefix
+        self.BUILD_PATH = BUILD_PATH
+        self.DB_PATH = DB_PATH
         self.ready = False
         self.support_url = 'https://discord.gg/PBmfvpU'
         self.official_url = 'https://guhbean.github.io/guhbot'
@@ -136,6 +141,13 @@ class Bot(BotBase):
         super().run(self.TOKEN, reconnect=True)
 
     async def on_ready(self):
+        # Build DB
+        async with connect(DB_PATH) as db:
+            with open(BUILD_PATH, 'r', encoding='utf-8') as script:
+                cur = await db.cursor()
+                await cur.executescript(script.read())
+                await db.commit()
+
         self.scheduler.start()
 
         if not self.ready:
