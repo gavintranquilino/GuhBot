@@ -163,7 +163,7 @@ class Bot(BotBase):
 
     async def on_message(self, message):
 
-        if not message.author.bot:
+        if not message.author.bot and message.guild:
             async with connect(DB_PATH) as db:
                 cur0 = await db.cursor() 
                 await cur0.execute('SELECT * FROM afk WHERE id = ?', (message.author.id,)) # Select row with author id
