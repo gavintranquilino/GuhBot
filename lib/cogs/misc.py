@@ -125,7 +125,7 @@ class Misc(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['role_stats', 'role'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 8, commands.BucketType.user)
     async def role_info(self, ctx, *, role: Optional[discord.Role]):
         """Learn more about a specific role"""
 
@@ -153,7 +153,7 @@ class Misc(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['av', 'pfp', 'profile', 'profile_pic', 'profile_picture'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 8, commands.BucketType.user)
     async def avatar(self, ctx, member: discord.Member = None):
         """Returns the user's profile picture and ID"""
 
@@ -166,7 +166,7 @@ class Misc(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['user_info', 'who_is'])
-    @commands.cooldown(2, 5, commands.BucketType.user)
+    @commands.cooldown(1, 8, commands.BucketType.user)
     async def whois(self, ctx, member: discord.Member = None):
         """Get info on a specific user"""
 
@@ -213,7 +213,7 @@ class Misc(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['afkon', 'afk_on'])
-    @commands.cooldown(2, 5, commands.BucketType.member)
+    @commands.cooldown(1, 8, commands.BucketType.member)
     async def afk(self, ctx, *, reason: str = 'No Reason'):
         """Set your account to an AFK status"""
 

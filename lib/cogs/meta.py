@@ -137,7 +137,7 @@ class Meta(commands.Cog):
                     await ctx.send(embed=embed)
 
     @commands.command(aliases=['change_prefix'])
-    @commands.cooldown(2, 10, commands.BucketType.guild)
+    @commands.cooldown(1, 10, commands.BucketType.guild)
     @commands.has_permissions(administrator=True)
     async def prefix(self, ctx, *, new_prefix: Optional[str]='guh '):
         """Set a custom prefix for your server"""
@@ -175,7 +175,7 @@ class Meta(commands.Cog):
             await ctx.send(f"Set the custom prefix to `{new_prefix}`\nDo `{new_prefix}prefix` to set it back to the default prefix.\nPing {self.client.user.mention} to check the current prefix.")
 
     @commands.command(aliases=['status', 'statistics', 'info'])
-    @commands.cooldown(2, 5, commands.BucketType.user)
+    @commands.cooldown(1, 8, commands.BucketType.user)
     async def stats(self, ctx):
         """Displays GuhBot's statistics"""
 
@@ -243,7 +243,7 @@ class Meta(commands.Cog):
         await message.edit(embed=embed)
 
     @commands.command(aliases=['latency'])
-    @commands.cooldown(2, 5, commands.BucketType.user)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def ping(self, ctx):
         """Returns the Discord API / Websocket latency"""
 
