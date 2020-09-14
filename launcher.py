@@ -1,6 +1,6 @@
-from lib.bot import client
+from lib.bot import launch
 
-version = '1.0.11.3'  # Updated cooldowns
+version = '1.0.12.0'  # Optimized database connection
 # v[Release].[Major].[Minor].[Patch]
 
-client.run(version)
+launch(version)

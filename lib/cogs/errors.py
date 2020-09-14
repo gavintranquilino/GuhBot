@@ -12,24 +12,23 @@ class Errors(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
+            bucket = self.client.cooldown.get_bucket(ctx.message)
+            retry_after = bucket.update_rate_limit()
+            if retry_after:
+                pass
 
-                bucket = self.client.cooldown.get_bucket(ctx.message)
-                retry_after = bucket.update_rate_limit()
-                if retry_after:
-                    pass
-
+            else:
+                # If the command is currently on cooldown trip this
+                m, s = divmod(error.retry_after, 60)
+                h, m = divmod(m, 60)
+                if int(h) is 0 and int(m) is 0:
+                    value = f"You must wait `{round(float(s), 2)} seconds` to use this command!"
+                elif int(h) is 0 and int(m) is not 0:
+                    value = f"You must wait `{int(m)} minutes and {int(s)} seconds` to use this command!"
                 else:
-                    # If the command is currently on cooldown trip this
-                    m, s = divmod(error.retry_after, 60)
-                    h, m = divmod(m, 60)
-                    if int(h) is 0 and int(m) is 0:
-                        value = f"You must wait `{round(float(s), 2)} seconds` to use this command!"
-                    elif int(h) is 0 and int(m) is not 0:
-                        value = f"You must wait `{int(m)} minutes and {int(s)} seconds` to use this command!"
-                    else:
-                        value = f"You must wait `{int(h)} hours, {int(m)} minutes and {int(s)} seconds` to use this command!"
+                    value = f"You must wait `{int(h)} hours, {int(m)} minutes and {int(s)} seconds` to use this command!"
 
-                    await ctx.send(f"Slow down {ctx.author.mention}! {value}")
+                await ctx.send(f"Slow down {ctx.author.mention}! {value}")
 
 
         elif isinstance(error, commands.CommandNotFound):
@@ -56,7 +55,6 @@ class Errors(commands.Cog):
                 embed.add_field(name=f"Error in {ctx.command}", value=f"{error}")
             await ctx.send(embed=embed)
         raise error
-        print(f"{error}")
 
     @commands.Cog.listener()
     async def on_ready(self):

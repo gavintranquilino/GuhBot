@@ -155,22 +155,22 @@ class Meta(commands.Cog):
             await ctx.send(embed=embed)
 
         else:
-            async with connect(self.client.DB_PATH) as db:
-                cur = await db.cursor()
-                await cur.execute('SELECT prefix FROM prefixes WHERE id = ?', (ctx.guild.id,))
-                prefix = await cur.fetchone()
+            cur = await self.client.db.cursor()
+            await cur.execute('SELECT prefix FROM prefixes WHERE id = ?', (ctx.guild.id,))
+            prefix = await cur.fetchone()
 
-                if not prefix:
-                    if not new_prefix == 'guh ':
-                        await cur.execute('INSERT INTO prefixes (id, prefix) VALUES (?, ?)', (ctx.guild.id, new_prefix))
- 
-                else:
-                    if new_prefix =='guh ':
-                        await cur.execute('DELETE FROM prefixes WHERE id = ?', (ctx.guild.id,))
-                    else:  
-                        await cur.execute('UPDATE prefixes SET prefix = ? WHERE id = ?', (new_prefix, ctx.guild.id))
-               
-                await db.commit()
+            if not prefix:
+                if not new_prefix == 'guh ':
+                    await cur.execute('INSERT INTO prefixes (id, prefix) VALUES (?, ?)', (ctx.guild.id, new_prefix))
+
+            else:
+                if new_prefix =='guh ':
+                    await cur.execute('DELETE FROM prefixes WHERE id = ?', (ctx.guild.id,))
+                else:  
+                    await cur.execute('UPDATE prefixes SET prefix = ? WHERE id = ?', (new_prefix, ctx.guild.id))
+            
+            await cur.close()
+            await self.client.db.commit()
 
             await ctx.send(f"Set the custom prefix to `{new_prefix}`\nDo `{new_prefix}prefix` to set it back to the default prefix.\nPing {self.client.user.mention} to check the current prefix.")
 
@@ -316,7 +316,7 @@ class Meta(commands.Cog):
         status_channel = self.client.get_channel(735332260559061042)
         await status_channel.send(f"{ctx.author.mention} is logging me out for: **{reason}**\n:wave: Goodbye everyone! I\'m shutting dow...")
         await self.client.close()
-        print(f"{self.client.user.name} was logged out.")
+        raise SystemExit(f"{self.client.user.name} was logged out.")
 
     @logout.error
     async def logout_error(self, ctx, error):

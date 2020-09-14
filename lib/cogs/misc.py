@@ -233,17 +233,16 @@ class Misc(commands.Cog):
                              icon_url=ctx.author.avatar_url)
 
         else:
-            async with connect(self.client.DB_PATH) as db:
-                cur = await db.cursor()
-                # Select row with author id
-                await cur.execute('SELECT * FROM afk WHERE id = ?', (ctx.author.id,))
-                author_afk = await cur.fetchone()
+            cur = await self.client.db.cursor()
+            # Select row with author id
+            await cur.execute('SELECT * FROM afk WHERE id = ?', (ctx.author.id,))
+            author_afk = await cur.fetchone()
 
-                if not author_afk:  # Check if row doesn't exist
-                    # Insert into row
-                    await cur.execute('INSERT INTO afk (id, reason) VALUES (?, ?)', (ctx.author.id, reason))
+            if not author_afk:  # Check if row doesn't exist
+                # Insert into row
+                await cur.execute('INSERT INTO afk (id, reason) VALUES (?, ?)', (ctx.author.id, reason))
 
-                await db.commit()
+            await self.client.db.commit()
 
             embed = discord.Embed(title=f"🟡 Now AFK",
                                   description=f"{ctx.author.mention} is now **AFK** for: **{reason}**",
