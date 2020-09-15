@@ -97,30 +97,27 @@ class Misc(commands.Cog):
 
         embed.set_thumbnail(url=ctx.guild.icon_url)
 
-        statuses = [len(list(filter(lambda m: str(m.status) == 'online', ctx.guild.members))),
-                    len(list(filter(lambda m: str(m.status) == 'idle', ctx.guild.members))),
-                    len(list(filter(lambda m: str(m.status) == 'dnd', ctx.guild.members))),
-                    len(list(filter(lambda m: str(m.status) == 'offline', ctx.guild.members)))]
-
-        fields = [('📛 Name', ctx.guild.name, True),
-                  ('💳 ID', ctx.guild.id, True),
-                  ('👑 Owner', ctx.guild.owner, True),
+        fields = [('📛 Name', f"{ctx.guild.name}\n`{ctx.guild.id}`", True),
+                  ('👑 Owner',
+                   f"{ctx.guild.owner}\n`{ctx.guild.owner.id}`", True),
+                  ('🕑 Created At', f"**{ctx.guild.created_at.strftime('%a, %b %d, %Y, %I:%M %p')}**", False),
                   ('🌎 Region', ctx.guild.region, True),
-                  ('🕑 Created At', ctx.guild.created_at.strftime('%a, %b %d, %Y, %I:%M %p'), True),
                   ('👥 Members', len(ctx.guild.members), True),
                   ('👤 Humans', len(list(filter(lambda m: not m.bot, ctx.guild.members))), True),
                   ('🤖 Bots', len(list(filter(lambda m: m.bot, ctx.guild.members))), True),
-                  ('💭 Statuses',
-                   f"🟢 {statuses[0]} 🟠 {statuses[1]} 🔴 {statuses[2]} ⚪ {statuses[3]}", True),
                   ('📜 Text channels', len(ctx.guild.text_channels), True),
                   ('🔊 Voice channels', len(ctx.guild.voice_channels), True),
                   ('🌀 Categories', len(ctx.guild.categories), True),
                   ('🏁 Roles', len(ctx.guild.roles), True),
+                  ('🥇 Boost Level', ctx.guild.premium_tier, True),
                   ('💎 Boosts', ctx.guild.premium_subscription_count, True),
+                  ('🌊 Server Splash', ctx.guild.splash, True),
                   bans]
 
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
+        
+        embed.set_footer(icon_url=ctx.guild.owner.avatar_url, text=f"{ctx.guild.owner} | {ctx.guild.owner.id}")
 
         await ctx.send(embed=embed)
 
