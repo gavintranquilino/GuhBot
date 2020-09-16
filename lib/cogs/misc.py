@@ -80,7 +80,7 @@ class Misc(commands.Cog):
                 await ctx.send(embed=embed)
             except UnboundLocalError:
                 await ctx.send(f"Sorry {ctx.author.mention}, I couldn\'t find COVID-19 stats for `{country}`")
-
+        
     @commands.command(aliases=['server_stats', 'server'])
     @commands.cooldown(1, 8, commands.BucketType.user)
     async def server_info(self, ctx):

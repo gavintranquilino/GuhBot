@@ -203,6 +203,38 @@ class Fun(commands.Cog):
 
         await ctx.send(embed=embed)
 
+    @commands.command(aliases=['kanye-west', 'kanye-quote', 'kanye_west', 'kanye_quote'])
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def kanye(self, ctx):
+        """Random Kanye West quotes. Thank you Kanye, very cool!"""
+
+        api_url = 'https://api.kanye.rest/'
+
+        await ctx.trigger_typing()
+
+        async with request('GET', api_url, headers={}) as response:
+            if response.status == 200:
+                data = await response.json()
+                quote = data['quote']
+
+            else:
+                await ctx.send(f"API returned a `{response.status} status.` Try again.")
+
+            embed = discord.Embed(title='Kanye West once said...',
+                                  url='https://kanye.rest/',
+                                  description=f"\"{quote}\"",
+                                  colour=ctx.author.colour,
+                                  timestamp=ctx.message.created_at)
+
+            img = random.choice(['https://cdn.discordapp.com/attachments/732800092045836338/755602650761920522/9k.png',
+                                 'https://cdn.discordapp.com/attachments/755144098578563164/755600589232013402/unknown.png',
+                                 'https://cdn.discordapp.com/attachments/732800092045836338/755600986315292773/GettyImages-599438126.png'])
+            
+            embed.set_image(url=img)
+            embed.set_footer(text='Thank you Kanye, very cool!')
+
+            await ctx.send(embed=embed)
+
     @commands.Cog.listener()
     async def on_ready(self):
         if not self.client.ready:
