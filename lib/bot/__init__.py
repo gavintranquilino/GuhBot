@@ -125,8 +125,8 @@ async def on_ready():
 
     client.scheduler.start()
 
-    # status_channel = client.get_channel(735332260559061042)
-    # await status_channel.send(':wave: Hello everyone! I\'m back online!')
+    status_channel = client.get_channel(735332260559061042)
+    await status_channel.send(':wave: Hello everyone! I\'m back online!')
 
     while not client.cogs_ready.all_ready():
         await sleep(0.5)

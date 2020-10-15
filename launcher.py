@@ -1,6 +1,6 @@
 from lib.bot import launch
 
-version = '1.0.12.2'  # Kanye Quotes
+version = '1.0.13'  # Image manipulation
 # v[Release].[Major].[Minor].[Patch]
 
 launch(version)
