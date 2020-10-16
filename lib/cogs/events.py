@@ -13,7 +13,6 @@ class Events(commands.Cog):
     async def on_message_delete(self, message):
         """Log deleted message into database"""
         
-        print(f"\n{message.channel.id}\n{message.author.id}\n{message.created_at}\n{message.content}\n")
         cur = await self.client.db.cursor()
         await cur.execute('SELECT * FROM snipe WHERE channel_id = ?', (message.channel.id,))
         is_snipe = await cur.fetchone()
