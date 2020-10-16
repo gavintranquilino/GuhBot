@@ -120,8 +120,18 @@ def launch(version):
 
     client.run(client.TOKEN, reconnect=True)
 
+async def connect_db():
+
+    client.db = await connect(DB_PATH)
+
+get_event_loop().run_until_complete(connect_db())
+
 @client.event
 async def on_ready():
+
+    cur = await client.db.cursor()
+    with open(BUILD_PATH, 'r', encoding='utf-8') as script:
+	    await cur.executescript(script.read())
 
     client.scheduler.start()
 
@@ -136,13 +146,6 @@ async def on_ready():
 
     meta = client.get_cog('Meta')
     await meta.set()
-
-async def connect_db():
-
-    client.db = await connect(DB_PATH)
-
-
-get_event_loop().run_until_complete(connect_db())
 
 @client.event
 async def on_message(message):

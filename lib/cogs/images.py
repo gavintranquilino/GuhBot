@@ -11,7 +11,7 @@ from aiohttp import request
 
 
 class Images(commands.Cog):
-    """What more can I say? They're fun commands."""
+    """Image manupulation commands"""
 
     def __init__(self, client):
         self.client = client
@@ -81,7 +81,7 @@ class Images(commands.Cog):
         bg.paste(pfp, (4, 70))
         bg.save('lib/images/project.png')
         
-        await ctx.send(file=discord.File('lib/images/project.png'))
+        await ctx.send(file=discord.File('lib/images/project.png'), content='Get a load of this guy') # TODO: add message
 
     @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -105,7 +105,7 @@ class Images(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         if not self.client.ready:
-            self.client.cogs_ready.ready_up('Fun')
+            self.client.cogs_ready.ready_up('Images')
 
 def setup(client):
     client.add_cog(Images(client))

@@ -9,6 +9,7 @@ from typing import Union, Optional
 from os import getcwd
 from json import load, dump
 from aiohttp import request
+from datetime import datetime
 
 
 class Misc(commands.Cog):
@@ -251,7 +252,39 @@ class Misc(commands.Cog):
                              icon_url=ctx.author.avatar_url)
 
         await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def snipe(self, ctx):
+        """Snipe the most recently deleted message"""
+
+        cur = await self.client.db.cursor()
+        await cur.execute('SELECT * FROM snipe WHERE channel_id = ?', (ctx.channel.id,))
+        snipe = await cur.fetchone()
+        await cur.close()
+
+        if not snipe:
+            await ctx.send('There\'s nothing to snipe!')
         
+        else:
+            try:
+                snipe_user = ctx.guild.get_member(snipe[1])
+                snipe_time = datetime.strptime(snipe[2], '%Y-%m-%d %H:%M:%S.%f')
+                snipe_message = snipe[3]
+
+                embed = discord.Embed(description=snipe_message, 
+                                        colour=snipe_user.colour, 
+                                        timestamp=snipe_time)
+
+                embed.set_author(name=f"{snipe_user.name}#{snipe_user.discriminator}",
+                                icon_url=snipe_user.avatar_url)
+
+                await ctx.send(embed=embed)
+
+            except:
+                await ctx.send('There\'s nothing to snipe!')
+
+
     @commands.Cog.listener()
     async def on_ready(self):
         if not self.client.ready:

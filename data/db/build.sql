@@ -8,3 +8,10 @@ CREATE TABLE IF NOT EXISTS afk (
   mentions integer DEFAULT 0,
   reason text DEFAULT "No Reason"
 );
+
+CREATE TABLE IF NOT EXISTS snipe (
+  channel_id integer PRIMARY KEY,
+  user_id integer,
+  time integer,
+  message text
+);
