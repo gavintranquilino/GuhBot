@@ -42,11 +42,43 @@ class Meta(commands.Cog):
     async def set(self):
         """Set the current bot status"""
 
-        _type, _name = self.message.split(' ', maxsplit=1)
-        await self.client.change_presence(activity=discord.Activity(
-            name=_name,
-            type=getattr(discord.ActivityType, _type, discord.ActivityType.watching),
+        try:
+            _type, _name = self.message.split(' ', maxsplit=1)
+
+        except ValueError:
+            _type = 'watching'
+            _name = self.message
+
+        await self.client.change_presence(activity=discord.Activity(name=_name, 
+        type=getattr(discord.ActivityType, _type, discord.ActivityType.watching),
         ))
+
+    @commands.command(aliases=['status'], hidden=True)
+    @commands.is_owner()
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def setstatus(self, ctx, *, status: Optional[str]=None):
+        """Change bot status"""
+
+        if not status:
+            status = 'watching @GuhBot | {guilds:,} servers & {users:,} users | version {version:s}'
+
+        self._message = status
+
+        for job in self.client.scheduler.get_jobs():
+            job.modify(next_run_time=datetime.now())
+
+        await ctx.send(f"Set status to `{status}`")
+    
+    @commands.command(hidden=True)
+    @commands.is_owner()
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def update(self, ctx):
+        """Update Schedules"""
+
+        for job in self.client.scheduler.get_jobs():
+            job.modify(next_run_time=datetime.now())
+
+        await ctx.send('Updated all schedules')
 
     @commands.command(hidden=True)
     @commands.cooldown(2, 5, commands.BucketType.user)
@@ -174,7 +206,7 @@ class Meta(commands.Cog):
 
             await ctx.send(f"Set the custom prefix to `{new_prefix}`\nDo `{new_prefix}prefix` to set it back to the default prefix.\nPing {self.client.user.mention} to check the current prefix.")
 
-    @commands.command(aliases=['status', 'statistics', 'info'])
+    @commands.command(aliases=['statistics', 'info'])
     @commands.cooldown(1, 8, commands.BucketType.user)
     async def stats(self, ctx):
         """Displays GuhBot's statistics"""
