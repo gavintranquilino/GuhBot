@@ -61,7 +61,7 @@ class Meta(commands.Cog):
 
             cog_list = []
             for x in self.client.cogs:
-                if x.lower() == 'errors':
+                if x.lower() in ('errors', 'events'):
                     pass
                 else:
                     cog_list.append((x, self.client.cogs[x].__doc__, False))
