@@ -1,5 +1,5 @@
 # 3rd party modules
-from discord import Embed
+from discord import Embed, Intents
 from aiosqlite import connect
 from discord.ext.commands import Bot
 from asyncio import sleep, get_event_loop
@@ -66,7 +66,8 @@ class Ready(object):
 
         return all([getattr(self, cog) for cog in COGS])
 
-client = Bot(command_prefix=get_prefix, case_insensitive=True, help_command=None)
+intents = Intents.default()
+client = Bot(command_prefix=get_prefix, intents=intents, case_insensitive=True, help_command=None)
 
 client.prefix = guild_prefix
 client.ready = False

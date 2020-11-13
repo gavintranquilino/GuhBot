@@ -1,6 +1,6 @@
 aiohttp==3.6.2
 APScheduler==3.6.3
-discord.py==1.4.0
+discord.py==1.5.1
 psutil==5.7.2
 akinator.py==4.0.1
 aiosqlite=0.15.0

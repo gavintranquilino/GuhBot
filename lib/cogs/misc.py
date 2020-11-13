@@ -82,11 +82,11 @@ class Misc(commands.Cog):
             except UnboundLocalError:
                 await ctx.send(f"Sorry {ctx.author.mention}, I couldn\'t find COVID-19 stats for `{country}`")
         
-    @commands.command(aliases=['server_stats', 'server'])
+    @commands.command(aliases=['server_stats', 'server'], hidden=True)
     @commands.cooldown(1, 8, commands.BucketType.user)
     async def server_info(self, ctx):
         """Get information on the current server"""
-
+        
         try:
             bans = ('🔨 Banned Members', len(await ctx.guild.bans()), True)
         except:
@@ -267,23 +267,24 @@ class Misc(commands.Cog):
             await ctx.send('There\'s nothing to snipe!')
         
         else:
-            try:
-                snipe_user = ctx.guild.get_member(snipe[1])
-                snipe_time = datetime.strptime(snipe[2], '%Y-%m-%d %H:%M:%S.%f')
-                snipe_message = snipe[3]
+            snipe_user = ctx.guild.get_member(snipe[1])
+            snipe_time = datetime.strptime(snipe[2], '%Y-%m-%d %H:%M:%S.%f')
+            snipe_message = snipe[3]
+            if not snipe_user:
+                colour = self.client.colours['RED']
+                name = 'Dummy'
+                discriminator = '0000'
+                timestamp = snipe_time
+                icon_url = 'https://cdn.discordapp.com/avatars/458290219238686741/a_239eef77c2c6d799ab607e49de1a6453.gif?size=1024'
 
-                embed = discord.Embed(description=snipe_message, 
-                                        colour=snipe_user.colour, 
-                                        timestamp=snipe_time)
+            embed = discord.Embed(description=snipe_message, 
+                                    colour=colour, 
+                                    timestamp=timestamp)
 
-                embed.set_author(name=f"{snipe_user.name}#{snipe_user.discriminator}",
-                                icon_url=snipe_user.avatar_url)
+            embed.set_author(name=f"{name}#{discriminator}",
+                            icon_url=icon_url)
 
-                await ctx.send(embed=embed)
-
-            except:
-                await ctx.send('There\'s nothing to snipe!')
-
+            await ctx.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_ready(self):
